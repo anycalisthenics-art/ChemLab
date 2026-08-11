@@ -1,0 +1,1609 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ChemLab — Interactive 118-Element Chemistry Lab</title>
+<meta name="description" content="ChemLab is an interactive educational chemistry laboratory with 118 elements, compound discovery, quizzes, mystery compounds, challenges, scientist profiles and real-world applications.">
+<meta name="keywords" content="ChemLab, chemistry game, chemistry lab, elements, compounds, periodic table, science game, Class 9 chemistry">
+<meta name="robots" content="index,follow">
+<style>
+:root{--bg:#050b15;--p:#0c192b;--line:#254762;--txt:#eff9ff;--muted:#9bb1c5;--cyan:#58e7ff;--violet:#9d7cff;--green:#67f3a5;--gold:#ffd06a}
+*{box-sizing:border-box}body{margin:0;color:var(--txt);font-family:Inter,system-ui,Segoe UI,sans-serif;background:radial-gradient(circle at 15% 5%,#173a60,transparent 35%),radial-gradient(circle at 90% 15%,#30205a,transparent 30%),var(--bg);min-height:100vh}
+header{text-align:center;padding:28px 18px 15px}h1{margin:0;font-size:clamp(28px,5vw,48px);letter-spacing:1px}h1 span{color:var(--cyan)}header p{color:var(--muted);margin:8px 0}
+.wrap{max-width:1400px;margin:auto;padding:12px 16px 40px;display:grid;grid-template-columns:1.35fr .65fr;gap:16px}.panel{background:linear-gradient(145deg,#10243cdd,#071321ee);border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:0 18px 60px #0008}
+.top{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}.stage{color:var(--cyan);font-weight:900}.stats{color:var(--muted)}
+.search{width:100%;margin-top:14px;padding:12px 14px;border-radius:13px;border:1px solid #2c4d68;background:#081727;color:var(--txt);outline:none}.search:focus{border-color:var(--cyan)}
+.elements{display:grid;grid-template-columns:repeat(10,1fr);gap:7px;margin-top:13px;max-height:490px;overflow:auto;padding-right:3px}.el{position:relative;min-height:69px;border:1px solid #284862;border-radius:12px;background:#0c2035;color:var(--txt);cursor:pointer;transition:.16s;padding:8px 3px}.el:hover{transform:translateY(-2px);border-color:var(--cyan)}.el.sel{background:linear-gradient(145deg,#11403c,#112c43);border-color:var(--green);box-shadow:0 0 0 2px #67f3a522}.num{position:absolute;top:4px;left:5px;font-size:9px;color:var(--muted)}.sym{font-size:22px;font-weight:950;margin-top:7px}.ename{font-size:9px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:13px}button.action{border:0;border-radius:12px;padding:11px 15px;font-weight:900;cursor:pointer;background:linear-gradient(90deg,var(--violet),var(--cyan));color:#06101b}button.secondary{background:#152c45!important;color:var(--txt)!important;border:1px solid #31526d!important}
+.result{margin-top:14px;min-height:300px;border:1px solid #294c69;border-radius:18px;background:radial-gradient(circle at 50% 25%,#173a58,#081523);padding:20px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center}.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}.chip{padding:6px 10px;border-radius:99px;background:#16324b;border:1px solid #315774;font-weight:800}.formula{font-size:42px;color:var(--cyan);font-weight:950;margin:12px 0;text-shadow:0 0 25px #31dfff55}.result h2{margin:2px 0 7px;font-size:24px}.meta{color:var(--muted);line-height:1.7;max-width:850px}.badge{margin-top:11px;padding:6px 11px;border-radius:99px;background:#153b2e;color:var(--green);font-weight:900;font-size:12px}
+.side h2{font-size:18px;margin:2px 0 8px}.card{background:#081827;border:1px solid #213f59;border-radius:14px;padding:12px;margin:9px 0}.card b{color:var(--cyan)}.list{max-height:450px;overflow:auto}.small{font-size:12px;color:var(--muted);line-height:1.6}.notice{background:#171d2c;border:1px solid #4d4051;padding:11px;border-radius:13px;color:#c6d5e2;margin-bottom:12px;font-size:12px}
+@media(max-width:1000px){.wrap{grid-template-columns:1fr}.elements{grid-template-columns:repeat(8,1fr)}}@media(max-width:600px){.elements{grid-template-columns:repeat(5,1fr)}.formula{font-size:34px}}
+
+.modebar{max-width:1400px;margin:0 auto 12px;padding:0 16px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.mode{border:1px solid #315774;background:#0d2034;color:#dcefff;border-radius:12px;padding:10px 15px;font-weight:900;cursor:pointer}.mode.active{background:linear-gradient(90deg,#9d7cff,#58e7ff);color:#06101b}
+.fullview{max-width:1400px;margin:0 auto 40px;padding:0 16px}.directory{display:grid;grid-template-columns:repeat(8,1fr);gap:8px;max-height:500px;overflow:auto}.directory .el{min-height:65px}
+.infoLayout{display:grid;grid-template-columns:300px 1fr;gap:14px;margin-top:14px}.infoCard{background:#081827;border:1px solid #294c69;border-radius:18px;padding:18px}.infoCard h2{margin:0 0 6px}.bigSymbol{font-size:70px;font-weight:950;color:#58e7ff}.propertyGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.prop{background:#0c2035;border:1px solid #213f59;border-radius:12px;padding:10px}.prop b{display:block;color:#58e7ff;font-size:11px;text-transform:uppercase;letter-spacing:.6px;margin-bottom:3px}.historyItem{display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid #284862;background:#081827;border-radius:14px;margin:8px 0}.historyItem input{width:18px;height:18px;margin-top:2px}.historyActions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.danger{background:#5a2630!important;color:#fff!important;border:1px solid #9a5260!important}.empty{padding:30px;text-align:center;color:#9bb1c5}.pill{display:inline-block;padding:4px 8px;border-radius:99px;background:#16324b;border:1px solid #315774;color:#9feeff;font-size:11px;font-weight:800;margin:3px}
+@media(max-width:850px){.directory{grid-template-columns:repeat(5,1fr)}.infoLayout{grid-template-columns:1fr}.propertyGrid{grid-template-columns:1fr}}
+@media(max-width:500px){.directory{grid-template-columns:repeat(3,1fr)}}
+
+/* ===== ChemLab Complete Project UI ===== */
+.featurebar{position:fixed;left:0;top:0;bottom:0;width:236px;margin:0;padding:18px 12px;display:flex;flex-direction:column;gap:8px;justify-content:flex-start;overflow-y:auto;z-index:1000;background:linear-gradient(180deg,#071827f7,#081321f7);border-right:1px solid #294c69;box-shadow:14px 0 40px #0006}
+.feature{width:100%;border:1px solid #315774;background:#0d2034;color:#dcefff;border-radius:12px;padding:10px 13px;font-weight:900;cursor:pointer;transition:.16s;text-align:left;flex:0 0 auto}
+.feature:hover,.feature.active{background:linear-gradient(90deg,#9d7cff,#58e7ff);color:#06101b;transform:translateX(2px)}
+.featureview{max-width:1400px;margin:0 auto 40px;padding:0 16px;margin-left:236px}
+/* Keep the two legacy full-screen views clear of the fixed left navigation. */
+.fullview{margin-left:236px;margin-right:0;width:auto}
+.featureview .panel{max-width:1400px}
+main.wrap{margin-left:236px}
+#commerceView{margin-left:236px}
+header{margin-left:236px}
+@media(max-width:900px){.featurebar{width:190px}.featureview,.fullview,main.wrap,#commerceView,header{margin-left:190px}}
+@media(max-width:650px){.featurebar{width:72px;padding:12px 8px}.feature{font-size:0;text-align:center;padding:11px 7px}.feature::first-letter{font-size:20px}.featureview,.fullview,main.wrap,#commerceView,header{margin-left:72px}}
+.featureGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:14px}
+.featureCard{background:#081827;border:1px solid #294c69;border-radius:18px;padding:16px}
+.featureCard h3{margin:4px 0 7px}.featureCard p{color:var(--muted);line-height:1.6}
+.kpi{font-size:32px;font-weight:950;color:var(--cyan)}
+.levelBar{height:12px;border-radius:99px;background:#071321;overflow:hidden;border:1px solid #294c69}
+.levelFill{height:100%;width:0;background:linear-gradient(90deg,var(--violet),var(--cyan));transition:.35s}
+.badgeGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+.achievement{border:1px solid #294c69;background:#081827;border-radius:16px;padding:14px;opacity:.45}
+.achievement.unlocked{opacity:1;border-color:#67f3a5;box-shadow:0 0 25px #67f3a510}
+.achievement .icon{font-size:30px}
+.challenge{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.challenge.done{border-color:#67f3a5}
+.progressText{font-size:12px;color:var(--muted)}
+.quizOption{width:100%;text-align:left;margin:7px 0;padding:12px;border-radius:12px;border:1px solid #315774;background:#0d2034;color:#e9f8ff;cursor:pointer;font-weight:800}
+.quizOption:hover{border-color:var(--cyan)}
+.quizOption.correct{border-color:#67f3a5;background:#123a30}
+.quizOption.wrong{border-color:#ff6b7a;background:#3a1720}
+.mysteryBox{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.clue{padding:12px;border:1px solid #315774;border-radius:12px;background:#0b1d30;margin:8px 0}
+.appCard{position:relative;overflow:hidden}
+.appTag{display:inline-block;padding:4px 8px;border-radius:99px;background:#16324b;color:#9feeff;font-size:11px;font-weight:900}
+.scientist{display:flex;gap:12px;align-items:flex-start}
+.scientistAvatar{width:58px;height:58px;border-radius:16px;display:grid;place-items:center;font-size:28px;background:linear-gradient(135deg,#9d7cff,#58e7ff);color:#06101b;flex:0 0 auto}
+.labBench{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.labSlot{min-height:130px;border:1px dashed #315774;border-radius:16px;padding:14px;background:#071321}
+.saveButtons{display:flex;gap:8px;flex-wrap:wrap}
+.codebox{width:100%;min-height:150px;border-radius:12px;border:1px solid #315774;background:#06101b;color:#cfeeff;padding:12px;font-family:Consolas,monospace}
+.toast{position:fixed;right:18px;bottom:18px;z-index:9999;background:#0b2034;border:1px solid #58e7ff;color:#eff9ff;padding:12px 16px;border-radius:14px;box-shadow:0 15px 40px #0008;animation:toastIn .2s ease}
+@keyframes toastIn{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
+@media(max-width:700px){.mysteryBox{grid-template-columns:1fr}.feature{flex:1 1 130px}.challenge{align-items:flex-start;flex-direction:column}}
+
+.adminGate{max-width:520px;margin:30px auto}.adminIcon{font-size:58px;text-align:center}.adminLock{display:flex;gap:10px;flex-wrap:wrap}.adminLock input{flex:1;min-width:220px}.adminPanel{display:none}.adminStats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}.adminTable{width:100%;border-collapse:collapse;margin-top:12px}.adminTable th,.adminTable td{padding:10px;border-bottom:1px solid #20384d;text-align:left}.privateBadge{color:#ffcf70;font-weight:800}.secureNote{border-left:4px solid #58e7ff;padding:12px;background:#071321;border-radius:10px}.adminDanger{border-left-color:#ff6b7a}
+
+
+/* Multi-profile / progression expansion */
+.profileHero{display:grid;grid-template-columns:150px 1fr;gap:18px;align-items:center}
+.avatar{width:120px;height:120px;border-radius:28px;display:grid;place-items:center;font-size:58px;background:linear-gradient(135deg,#9d7cff,#58e7ff);color:#06101b;font-weight:950;box-shadow:0 15px 40px #0005}
+.rankBadge{display:inline-block;padding:6px 10px;border-radius:99px;background:#172c46;border:1px solid #315774;color:#9feeff;font-weight:900;font-size:12px}
+.statGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.statBox{padding:14px;border:1px solid #294c69;background:#081827;border-radius:16px}
+.statBox .big{font-size:25px;font-weight:950;color:var(--cyan)}
+.tree{display:grid;gap:14px}
+.treeRow{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.skillNode{border:1px solid #315774;background:#081827;border-radius:18px;padding:15px;position:relative}
+.skillNode.unlocked{border-color:#67f3a5;box-shadow:0 0 25px #67f3a510}
+.skillNode.locked{opacity:.5}
+.skillNode button{margin-top:10px}
+.playerCard{cursor:pointer;transition:.2s}
+.playerCard:hover{transform:translateY(-2px);border-color:var(--cyan)}
+.playerMini{display:flex;gap:12px;align-items:center}
+.miniAvatar{width:52px;height:52px;border-radius:15px;display:grid;place-items:center;font-size:25px;background:#16324b}
+.profileGrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.themeCard{min-height:160px;display:flex;flex-direction:column;justify-content:space-between}
+.themePreview{height:70px;border-radius:14px;background:linear-gradient(135deg,#071321,#16324b);border:1px solid #315774}
+.themeCard.selected{border-color:#67f3a5}
+.speedTimer{font-size:64px;font-weight:950;text-align:center;color:var(--cyan);letter-spacing:2px}
+.speedQuestion{font-size:26px;font-weight:950;text-align:center;margin:20px 0}
+.speedOptions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:700px;margin:auto}
+.accountBox{max-width:560px;margin:auto}
+.privateField{border-left:4px solid #ffcf70;padding:12px;background:#15170d;border-radius:10px}
+@media(max-width:700px){.profileHero,.profileGrid{grid-template-columns:1fr}.speedOptions{grid-template-columns:1fr}.avatar{margin:auto}}
+</style></head>
+<body>
+<header><h1>🧪 <span>ChemLab</span></h1>
+<p>Explore • Combine • Discover • Learn</p>
+<div class="small">A polished educational chemistry laboratory — built as a complete game project.</div>
+</header>
+
+<script id="chemlab-account-storage-scope">
+(function(){
+  const scopedKeys = new Set([
+    "chemlabCompleteSaveV1","chemlabdisc","chemlabExtraV1",
+    "clElementCount","clElementVisited","clVisitedElements",
+    "clAppsVisited","clScientistsVisited","clPlayersVisited",
+    "labName","clExported"
+  ]);
+  const rawGet = Storage.prototype.getItem;
+  const rawSet = Storage.prototype.setItem;
+  const rawRemove = Storage.prototype.removeItem;
+  function key(k){
+    const session = rawGet.call(localStorage,"chemlabSessionV1");
+    return scopedKeys.has(k) && session ? k+"::"+session : k;
+  }
+  Storage.prototype.getItem = function(k){ return rawGet.call(this,key(String(k))); };
+  Storage.prototype.setItem = function(k,v){ return rawSet.call(this,key(String(k)),String(v)); };
+  Storage.prototype.removeItem = function(k){ return rawRemove.call(this,key(String(k))); };
+})();
+</script>
+<div class="featurebar" id="featurebar">
+  <button class="feature active" data-view="home">🏠 Home</button>
+  <button class="feature" data-view="forge">🧪 Forge</button>
+  <button class="feature" data-view="elements">📚 Elements</button>
+  <button class="feature" data-view="compounds">📖 Compounds</button>
+  <button class="feature" data-view="challenges">🎯 Challenges</button>
+  <button class="feature" data-view="mystery">🔍 Mystery</button>
+  <button class="feature" data-view="applications">🌍 Applications</button>
+  <button class="feature" data-view="scientists">👨‍🔬 Scientists</button>
+  <button class="feature" data-view="lab">🧫 My Laboratory</button>
+  <button class="feature" data-view="history">🕘 History</button>
+  <button class="feature" data-view="searchsetup">🔎 Search Setup</button>
+  <button class="feature" data-view="admin">🛡️ Admin</button>
+  <button class="feature" data-view="profile">👤 Profile</button>
+  <button class="feature" data-view="players">👥 Players</button>
+  <button class="feature" data-view="skilltree">🧠 Skill Tree</button>
+  <button class="feature" data-view="speedrun">⚡ Speedrun</button>
+  <button class="feature" data-view="themes">🎨 Lab Themes</button>
+  <button class="feature" data-view="account">🔐 Account</button>
+</div>
+
+
+<section class="fullview" id="elementsView" style="display:none">
+  <div class="panel">
+    <div class="top"><div><h2 style="margin:0">📚 Element Encyclopedia</h2><div class="small">Explore all 118 elements and their key physical, chemical, historical and practical information.</div></div><div class="stats">118 elements</div></div>
+    <input class="search" id="elementSearch" placeholder="🔎 Search by element name or symbol…">
+    <div class="directory" id="directory"></div>
+    <div class="infoLayout" id="elementDetail"><div class="infoCard empty">Select an element to explore it.</div></div>
+  </div>
+</section>
+
+<section class="fullview" id="historyView" style="display:none">
+  <div class="panel">
+    <div class="top"><div><h2 style="margin:0">🕘 Discovery History</h2><div class="small">Every exact chemistry discovery you unlock is stored here in your browser.</div></div><div class="stats"><span id="historyCount">0</span> saved</div></div>
+    <div class="historyActions">
+      <button class="action secondary" id="selectAllHistory">☑ Select all</button>
+      <button class="action secondary" id="selectNoneHistory">☐ Select none</button>
+      <button class="action danger" id="deleteHistory">🗑 Delete selected</button>
+    </div>
+    <div id="historyList"></div>
+  </div>
+</section>
+
+
+<section class="featureview" id="homeView" style="display:none">
+  <div class="panel">
+    <div class="top">
+      <div><h2 style="margin:0">🏠 ChemLab Command Center</h2><div class="small">Your complete chemistry game dashboard.</div></div>
+      <div class="stats">Level <b id="levelNumber">1</b> • <span id="xpNumber">0</span> XP</div>
+    </div>
+    <div class="featureGrid">
+      <div class="featureCard"><div class="kpi" id="homeDiscoveries">0</div><div class="small">Discoveries</div></div>
+      <div class="featureCard"><div class="kpi" id="homeChallenges">0</div><div class="small">Challenges completed</div></div>
+      <div class="featureCard"><div class="kpi" id="homeQuizScore">0%</div><div class="small">Best quiz score</div></div>
+      <div class="featureCard"><div class="kpi" id="homeMystery">0</div><div class="small">Mystery cases solved</div></div>
+    </div>
+    <div style="margin-top:18px"><div class="top"><b id="levelTitle">Novice Chemist</b><span class="small"><span id="xpInLevel">0</span>/100 XP to next level</span></div><div class="levelBar"><div class="levelFill" id="levelFill"></div></div></div>
+    <div class="featureGrid">
+      <div class="featureCard"><h3>🚀 Start experimenting</h3><p>Use the Chemistry Forge to select 2–5 elements and analyze exact element-set outcomes.</p><button class="action" data-go="forge">Open Forge</button></div>
+      <div class="featureCard"><h3>🎯 Complete missions</h3><p>Take chemistry challenges and earn XP toward uniquely named achievements.</p><button class="action" data-go="challenges">View Challenges</button></div>
+      <div class="featureCard"><h3>🔍 Crack a mystery</h3><p>Use clues about formulas, properties and applications to identify a hidden compound.</p><button class="action" data-go="mystery">Mystery Mode</button></div>
+    </div>
+  </div>
+</section>
+
+<section class="featureview" id="compoundsView" style="display:none">
+  <div class="panel">
+    <div class="top"><div><h2 style="margin:0">📖 Compound Encyclopedia</h2><div class="small">Browse compounds already represented in ChemLab's chemistry database.</div></div><div class="stats" id="compoundCount">0 compounds</div></div>
+    <input class="search" id="compoundSearch" placeholder="🔎 Search formula, compound name, type or state…">
+    <div class="featureGrid" id="compoundDirectory"></div>
+  </div>
+</section>
+
+<section class="featureview" id="challengesView" style="display:none">
+  <div class="panel">
+    <div class="top"><div><h2 style="margin:0">🎯 Challenges & Quizzes</h2><div class="small">Short missions designed to reinforce chemistry concepts.</div></div><div class="stats">Earn XP</div></div>
+    <div class="featureCard" style="margin-top:14px">
+      <div class="top"><h3 id="quizTitle" style="margin:0">Chemistry Sprint</h3><span id="quizCounter" class="small"></span></div>
+      <p id="quizQuestion" style="font-size:20px;font-weight:900"></p>
+      <div id="quizOptions"></div>
+      <div id="quizFeedback" class="small"></div>
+      <button class="action" id="quizNext" style="display:none;margin-top:10px">Next Question →</button>
+    </div>
+    <h3 style="margin-top:22px">Mission Board</h3>
+    <div class="featureGrid" id="challengeList"></div>
+  </div>
+</section>
+
+<section class="featureview" id="mysteryView" style="display:none">
+  <div class="panel">
+    <div class="top"><div><h2 style="margin:0">🔍 Mystery Compound Mode</h2><div class="small">Solve the case from scientific clues. No lab instructions—just reasoning.</div></div><button class="action secondary" id="newMystery">New Case</button></div>
+    <div class="mysteryBox" style="margin-top:14px">
+      <div class="featureCard">
+        <h3>🔐 Case File</h3>
+        <div id="mysteryClues"></div>
+      </div>
+      <div class="featureCard">
+        <h3>🧠 Your Diagnosis</h3>
+        <input class="search" id="mysteryAnswer" placeholder="Enter compound name or formula">
+        <button class="action" id="mysteryCheck" style="margin-top:10px">Check Answer</button>
+        <div id="mysteryFeedback" class="small" style="margin-top:10px"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="featureview" id="applicationsView" style="display:none">
+  <div class="panel">
+    <div class="top"><div><h2 style="margin:0">🌍 Real-World Applications</h2><div class="small">See how chemistry connects to everyday technology, industry and science.</div></div></div>
+    <div class="featureGrid" id="applicationsGrid"></div>
+  </div>
+</section>
+
+<section class="featureview" id="scientistsView" style="display:none">
+  <div class="panel">
+    <div class="top"><div><h2 style="margin:0">👨‍🔬 Scientist Gallery</h2><div class="small">Meet scientists connected to discoveries, theories and chemistry's development.</div></div></div>
+    <div class="featureGrid" id="scientistGrid"></div>
+  </div>
+</section>
+
+<section class="featureview" id="labView" style="display:none">
+  <div class="panel">
+    <div class="top"><div><h2 style="margin:0">🧫 My Laboratory</h2><div class="small">Your personal ChemLab profile, progress, saves and achievements.</div></div><div class="stats">Autosave ON</div></div>
+    <div class="featureGrid">
+      <div class="featureCard"><h3>🏷️ Lab Profile</h3><input class="search" id="labName" placeholder="Your lab name"><button class="action" id="saveLabName" style="margin-top:9px">Save Lab Name</button><p class="small" id="labNameDisplay"></p></div>
+      <div class="featureCard"><h3>💾 Save / Load</h3><p class="small">Progress is automatically stored in this browser. Export a backup or import one later.</p><div class="saveButtons"><button class="action" id="exportSave">Export Save</button><label class="action secondary" style="cursor:pointer">Import Save<input id="importSave" type="file" accept=".json,application/json" hidden></label><button class="action danger" id="resetSave">Reset Progress</button></div></div>
+      <div class="featureCard"><h3>📊 Statistics</h3><div class="small" id="labStats"></div></div>
+    </div>
+    <h3 style="margin-top:22px">🏆 Achievement Vault</h3>
+    <div class="badgeGrid" id="achievementGrid"></div>
+  </div>
+</section>
+
+<section class="featureview" id="searchsetupView" style="display:none">
+  <div class="panel">
+    <div class="top"><div><h2 style="margin:0">🔎 Google Search Setup</h2><div class="small">The HTML is prepared for search engines, but Google indexing requires the site to be hosted publicly.</div></div></div>
+    <div class="featureGrid">
+      <div class="featureCard"><h3>1. Publish</h3><p>Upload <b>ChemLab.html</b> to a public HTTPS host and give it a clean page URL such as <b>/chemlab/</b>.</p></div>
+      <div class="featureCard"><h3>2. Search Console</h3><p>Add your domain/property in Google Search Console, verify ownership, then request indexing for the public ChemLab URL.</p></div>
+      <div class="featureCard"><h3>3. Metadata</h3><p>ChemLab already includes a descriptive title, description, keywords and robots directive.</p></div>
+      <div class="featureCard"><h3>4. Optional sitemap</h3><p>For a multi-page public site, add a sitemap.xml and robots.txt pointing search engines to the public ChemLab pages.</p></div>
+    </div>
+    <h3>🧩 Suggested homepage JSON-LD</h3>
+    <textarea class="codebox" readonly>{
+  "@context":"https://schema.org",
+  "@type":"EducationalApplication",
+  "name":"ChemLab",
+  "applicationCategory":"EducationalApplication",
+  "educationalUse":"Chemistry learning",
+  "description":"Interactive chemistry laboratory with elements, compounds, quizzes and discovery challenges."
+}</textarea>
+  </div>
+</section>
+
+
+<section class="featureview" id="profileView" style="display:none">
+  <div class="panel">
+    <div class="top"><div><h2>👤 My Profile</h2><div class="small">Your ChemLab identity, rank, progress and collections.</div></div><span class="rankBadge" id="profileRank">🧪 Lab Rookie</span></div>
+    <div class="profileHero">
+      <div class="avatar" id="profileAvatar">🧪</div>
+      <div><h1 id="profileUsername">Guest Scientist</h1><p class="small" id="profileAbout">Chemistry explorer</p><div class="levelBar"><div class="levelFill" id="profileLevelFill"></div></div><p><b>Level <span id="profileLevel">1</span></b> • <span id="profileXP">0</span> XP</p></div>
+    </div>
+    <div class="statGrid" style="margin-top:16px">
+      <div class="statBox"><div class="big" id="profileElements">0/118</div>Elements explored</div>
+      <div class="statBox"><div class="big" id="profileCompounds">0</div>Compounds</div>
+      <div class="statBox"><div class="big" id="profileQuiz">0%</div>Quiz accuracy</div>
+      <div class="statBox"><div class="big" id="profileMystery">0</div>Mysteries</div>
+      <div class="statBox"><div class="big" id="profileAchievements">0</div>Achievements</div>
+      <div class="statBox"><div class="big" id="profileScientists">0</div>Scientists</div>
+    </div>
+    <div class="profileGrid" style="margin-top:14px">
+      <div class="featureCard"><h3>🧫 Laboratory</h3><p id="profileLabTheme">Basic Laboratory</p><p class="small" id="profileJoin">Local profile</p></div>
+      <div class="featureCard"><h3>🏆 Progress</h3><p id="profileProgressText"></p></div>
+    </div>
+  </div>
+</section>
+
+<section class="featureview" id="playersView" style="display:none">
+  <div class="panel">
+    <div class="top"><div><h2>👥 Player Directory</h2><div class="small">Public game profiles only. Passwords and age are never shown here.</div></div><div class="stats" id="playerCount">0 players</div></div>
+    <input class="search" id="playerSearch" placeholder="🔎 Search username…">
+    <div class="featureGrid" id="playerDirectory"></div>
+    <div class="featureCard" id="publicProfile" style="display:none;margin-top:14px"></div>
+  </div>
+</section>
+
+<section class="featureview" id="skilltreeView" style="display:none">
+  <div class="panel">
+    <div class="top"><div><h2>🧠 Chemistry Skill Tree</h2><div class="small">Spend Skill Points earned from leveling up to unlock knowledge paths.</div></div><div class="stats">Skill Points: <b id="skillPoints">0</b></div></div>
+    <div class="tree" id="skillTree"></div>
+  </div>
+</section>
+
+<section class="featureview" id="speedrunView" style="display:none">
+  <div class="panel">
+    <div class="top"><div><h2>⚡ 60-Second Lab</h2><div class="small">Answer as many chemistry questions as possible before time runs out.</div></div><div class="stats">Best: <b id="speedBest">0</b></div></div>
+    <div id="speedStart">
+      <div class="featureCard" style="max-width:650px;margin:18px auto;text-align:center"><h2>⚡ Speedrun Mode</h2><p>Choose a difficulty and race the clock. This is a knowledge game—no real laboratory procedures are involved.</p><select class="search" id="speedDifficulty"><option>Easy</option><option>Medium</option><option>Hard</option><option>Expert</option></select><button class="action" id="speedStartBtn" style="margin-top:10px">Start 60-Second Run</button></div>
+    </div>
+    <div id="speedGame" style="display:none"><div class="speedTimer" id="speedTimer">60</div><div class="speedQuestion" id="speedQuestion"></div><div class="speedOptions" id="speedOptions"></div><div class="small" style="text-align:center;margin-top:14px">Score: <b id="speedScore">0</b> • Answered: <b id="speedAnswered">0</b> • Accuracy: <b id="speedAccuracy">0%</b></div></div>
+    <div id="speedResult" class="featureCard" style="display:none;max-width:650px;margin:18px auto;text-align:center"></div>
+  </div>
+</section>
+
+<section class="featureview" id="themesView" style="display:none">
+  <div class="panel">
+    <div class="top"><div><h2>🎨 Laboratory Themes</h2><div class="small">Unlock visual laboratory themes as your ChemLab profile grows.</div></div></div>
+    <div class="featureGrid" id="themeGrid"></div>
+  </div>
+</section>
+
+<section class="featureview" id="accountView" style="display:none">
+  <div class="panel">
+    <div class="accountBox">
+      <div class="top"><div><h2>🔐 ChemLab Account</h2><div class="small">Username + password account system for the current offline prototype.</div></div></div>
+      <div id="accountLoggedOut">
+        <div class="featureCard">
+          <h3>Create Account</h3>
+          <input class="search" id="accountCreateUsername" maxlength="20" placeholder="Username">
+          <input class="search" id="accountCreatePassword" type="password" placeholder="Password">
+          <button class="action" id="createAccountBtn">Create Account</button>
+          <p class="small">Create an account with only a username and password. In this offline prototype, account data is stored in this browser; the public version will use secure server authentication.</p>
+        </div>
+        <div class="featureCard" style="margin-top:12px">
+          <h3>Sign In</h3>
+          <input class="search" id="accountLoginUsername" placeholder="Username">
+          <input class="search" id="accountLoginPassword" type="password" placeholder="Password">
+          <button class="action" id="loginAccountBtn">Sign In</button>
+        </div>
+      </div>
+      <div id="accountLoggedIn" style="display:none">
+        <div class="featureCard">
+          <h3>👤 Signed in as <span id="accountCurrentUser"></span></h3>
+          <p class="small">Public profile progress can be shown to other players; private credentials stay hidden.</p>
+          <div class="privateField">🔒 Private account information<br><b>Password:</b> Never displayed; only a password hash is stored in this local prototype.</div>
+          <button class="action secondary" id="logoutAccountBtn" style="margin-top:10px">Sign Out</button>
+        </div>
+      </div>
+      <div id="accountMessage" class="small" style="margin-top:10px"></div>
+    </div>
+  </div>
+</section>
+
+<section class="featureview" id="adminView" style="display:none">
+  <div class="panel">
+    <div id="adminGate" class="adminGate">
+      <div class="featureCard">
+        <div class="adminIcon">🛡️</div>
+        <h2 style="text-align:center">ChemLab Admin Access</h2>
+        <p class="small" style="text-align:center">Enter the administrator access code to open the ChemLab control panel.</p>
+        <div class="adminLock">
+          <input class="search" id="adminCode" type="password" autocomplete="off" placeholder="Enter admin code">
+          <button class="action" id="adminUnlock">🔓 Unlock Dashboard</button>
+        </div>
+        <div id="adminMessage" class="small" style="margin-top:10px"></div>
+      </div>
+      <div class="secureNote" style="margin-top:14px">⚠️ <b>Important:</b> this offline HTML version can only provide a local admin gate. A public ChemLab must move authentication to a server; a browser-only secret cannot be truly hidden from someone who inspects the source code.</div>
+    </div>
+    <div id="adminPanel" class="adminPanel">
+      <div class="top"><div><h2 style="margin:0">🛡️ ChemLab Admin Dashboard</h2><div class="small">Local development/control panel for the current browser build.</div></div><button class="action secondary" id="adminLockBtn">🔒 Lock</button></div>
+      <div class="adminStats" style="margin-top:16px">
+        <div class="featureCard"><div class="kpi" id="adminLevel">1</div><div class="small">Current level</div></div>
+        <div class="featureCard"><div class="kpi" id="adminXP">0</div><div class="small">XP</div></div>
+        <div class="featureCard"><div class="kpi" id="adminDiscoveries">0</div><div class="small">Discoveries</div></div>
+        <div class="featureCard"><div class="kpi" id="adminAchievements">0</div><div class="small">Achievements</div></div>
+      </div>
+      <div class="featureGrid" style="margin-top:16px">
+        <div class="featureCard"><h3>👤 Current Player</h3><p><b>Lab username:</b> <span id="adminUsername">Not set</span></p><p><b>Rank:</b> <span id="adminRank">Novice Chemist</span></p><p><b>Account:</b> <span class="privateBadge">🔒 Private credentials are protected</span></p></div>
+        <div class="featureCard"><h3>🔐 Account Security</h3><p class="small">Password data is not stored by this admin panel. For a public version, passwords must be hashed and handled by the server.</p><button class="action secondary" id="adminClearLocal">Clear local player session</button></div>
+        <div class="featureCard"><h3>💾 Game Storage</h3><p class="small" id="adminStorageInfo">Checking local storage…</p><button class="action secondary" id="adminRefresh">↻ Refresh Dashboard</button></div>
+        <div class="featureCard"><h3>🌐 Public Version</h3><p class="small">When ChemLab becomes public, this dashboard should connect to a protected backend admin account rather than using a code inside the HTML.</p><span class="pill">LOCAL DEMO</span></div>
+      </div>
+      <h3 style="margin-top:22px">📊 Local Player Data</h3>
+      <table class="adminTable"><thead><tr><th>Data</th><th>Value</th><th>Visibility</th></tr></thead><tbody>
+        <tr><td>Username</td><td id="adminTableUser">—</td><td>Public profile</td></tr>
+        <tr><td>Level</td><td id="adminTableLevel">—</td><td>Public profile</td></tr>
+        <tr><td>XP</td><td id="adminTableXP">—</td><td>Public profile</td></tr>
+        <tr><td>Discoveries</td><td id="adminTableDisc">—</td><td>Public profile</td></tr>
+        <tr><td>Achievements</td><td id="adminTableAch">—</td><td>Public profile</td></tr>
+        <tr><td>Password</td><td>Never displayed</td><td class="privateBadge">Private</td></tr>
+        <tr><td>Credentials</td><td>Never displayed</td><td class="privateBadge">Private</td></tr>
+      </tbody></table>
+      <div id="adminGamepassRequests" style="margin-top:24px"></div>
+    </div>
+  </div>
+</section>
+
+<main class="wrap">
+<section class="panel">
+<div class="top"><div class="stage">STAGE <span id="stage">1</span>/5</div><div class="stats">Selected: <b id="selCount">0</b>/5 • Discoveries: <b id="disc">0</b></div></div>
+<input class="search" id="search" placeholder="🔎 Search an element by name or symbol…"><div class="small" style="margin-top:7px">Try <b>hydrogen</b>, <b>H</b>, <b>oxygen</b>, or any atomic number.</div>
+<div class="elements" id="elements"></div>
+<div class="buttons"><button class="action" id="combine">🧪 ANALYZE COMBINATION</button><button class="action secondary" id="clear">↺ CLEAR</button><button class="action secondary" id="new">✦ NEW EXPERIMENT</button></div>
+<div class="result" id="result"><div class="formula">⚛️</div><h2>Select elements</h2><div class="meta">Choose 2–5 elements to investigate. One-element selections show element information.</div></div>
+</section>
+<aside class="panel side"><h2>🧬 Selected Elements</h2><div class="card" id="selectedInfo">Nothing selected.</div>
+<div class="notice">⚠️ The engine distinguishes <b>known compounds</b>, <b>rule-based predictions</b>, and <b>condition-dependent chemistry</b>. It will not invent a formula just to fill a blank.</div>
+<h2>📚 Discoveries</h2><div class="list" id="list"></div></aside>
+</main>
+<script>
+const elements=[["H", "Hydrogen", 1], ["He", "Helium", 2], ["Li", "Lithium", 3], ["Be", "Beryllium", 4], ["B", "Boron", 5], ["C", "Carbon", 6], ["N", "Nitrogen", 7], ["O", "Oxygen", 8], ["F", "Fluorine", 9], ["Ne", "Neon", 10], ["Na", "Sodium", 11], ["Mg", "Magnesium", 12], ["Al", "Aluminium", 13], ["Si", "Silicon", 14], ["P", "Phosphorus", 15], ["S", "Sulfur", 16], ["Cl", "Chlorine", 17], ["Ar", "Argon", 18], ["K", "Potassium", 19], ["Ca", "Calcium", 20], ["Sc", "Scandium", 21], ["Ti", "Titanium", 22], ["V", "Vanadium", 23], ["Cr", "Chromium", 24], ["Mn", "Manganese", 25], ["Fe", "Iron", 26], ["Co", "Cobalt", 27], ["Ni", "Nickel", 28], ["Cu", "Copper", 29], ["Zn", "Zinc", 30], ["Ga", "Gallium", 31], ["Ge", "Germanium", 32], ["As", "Arsenic", 33], ["Se", "Selenium", 34], ["Br", "Bromine", 35], ["Kr", "Krypton", 36], ["Rb", "Rubidium", 37], ["Sr", "Strontium", 38], ["Y", "Yttrium", 39], ["Zr", "Zirconium", 40], ["Nb", "Niobium", 41], ["Mo", "Molybdenum", 42], ["Tc", "Technetium", 43], ["Ru", "Ruthenium", 44], ["Rh", "Rhodium", 45], ["Pd", "Palladium", 46], ["Ag", "Silver", 47], ["Cd", "Cadmium", 48], ["In", "Indium", 49], ["Sn", "Tin", 50], ["Sb", "Antimony", 51], ["Te", "Tellurium", 52], ["I", "Iodine", 53], ["Xe", "Xenon", 54], ["Cs", "Caesium", 55], ["Ba", "Barium", 56], ["La", "Lanthanum", 57], ["Ce", "Cerium", 58], ["Pr", "Praseodymium", 59], ["Nd", "Neodymium", 60], ["Pm", "Promethium", 61], ["Sm", "Samarium", 62], ["Eu", "Europium", 63], ["Gd", "Gadolinium", 64], ["Tb", "Terbium", 65], ["Dy", "Dysprosium", 66], ["Ho", "Holmium", 67], ["Er", "Erbium", 68], ["Tm", "Thulium", 69], ["Yb", "Ytterbium", 70], ["Lu", "Lutetium", 71], ["Hf", "Hafnium", 72], ["Ta", "Tantalum", 73], ["W", "Tungsten", 74], ["Re", "Rhenium", 75], ["Os", "Osmium", 76], ["Ir", "Iridium", 77], ["Pt", "Platinum", 78], ["Au", "Gold", 79], ["Hg", "Mercury", 80], ["Tl", "Thallium", 81], ["Pb", "Lead", 82], ["Bi", "Bismuth", 83], ["Po", "Polonium", 84], ["At", "Astatine", 85], ["Rn", "Radon", 86], ["Fr", "Francium", 87], ["Ra", "Radium", 88], ["Ac", "Actinium", 89], ["Th", "Thorium", 90], ["Pa", "Protactinium", 91], ["U", "Uranium", 92], ["Np", "Neptunium", 93], ["Pu", "Plutonium", 94], ["Am", "Americium", 95], ["Cm", "Curium", 96], ["Bk", "Berkelium", 97], ["Cf", "Californium", 98], ["Es", "Einsteinium", 99], ["Fm", "Fermium", 100], ["Md", "Mendelevium", 101], ["No", "Nobelium", 102], ["Lr", "Lawrencium", 103], ["Rf", "Rutherfordium", 104], ["Db", "Dubnium", 105], ["Sg", "Seaborgium", 106], ["Bh", "Bohrium", 107], ["Hs", "Hassium", 108], ["Mt", "Meitnerium", 109], ["Ds", "Darmstadtium", 110], ["Rg", "Roentgenium", 111], ["Cn", "Copernicium", 112], ["Nh", "Nihonium", 113], ["Fl", "Flerovium", 114], ["Mc", "Moscovium", 115], ["Lv", "Livermorium", 116], ["Ts", "Tennessine", 117], ["Og", "Oganesson", 118]];
+const elementInfo=[{"s": "H", "n": "Hydrogen", "z": 1, "mass": 1.008, "cat": "Nonmetal", "state": "Gas", "common": "Hydrogen", "uses": "Fuel cells, ammonia production, petroleum refining; major component of stars.", "history": "Identified as an element by Henry Cavendish in 1766; Antoine Lavoisier named it hydrogen in 1783.", "period": 1, "block": "s-block", "key": "Generally poor electrical conductors (with important exceptions such as graphite). Often form covalent molecules or network solids and commonly gain/share electrons in compounds."}, {"s": "He", "n": "Helium", "z": 2, "mass": 4.0026, "cat": "Noble gas", "state": "Gas", "common": "Helium", "uses": "Cryogenic cooling, leak detection, balloons and controlled atmospheres.", "history": "Discovered spectroscopically in the Sun in 1868; isolated on Earth in 1895 by William Ramsay and collaborators.", "period": 1, "block": "p-block", "key": "Very low chemical reactivity under ordinary conditions because the valence shell is filled. Monatomic gases at room conditions."}, {"s": "Li", "n": "Lithium", "z": 3, "mass": 6.94, "cat": "Alkali metal", "state": "Solid", "common": "Lithium", "uses": "Rechargeable batteries, ceramics, glass, lubricants and some alloys.", "history": "Discovered in minerals by Johan August Arfwedson in 1817; isolated as a metal by Brande and Davy in 1821.", "period": 2, "block": "s-block", "key": "Soft, reactive metal with one common valence electron; readily forms +1 ions and reacts strongly with water and air."}, {"s": "Be", "n": "Beryllium", "z": 4, "mass": 9.0122, "cat": "Alkaline earth metal", "state": "Solid", "common": "Beryllium", "uses": "Aerospace alloys, X-ray windows and precision instruments.", "history": "Identified by Louis Nicolas Vauquelin in 1798; isolated as a metal independently by Wöhler and Bussy in 1828.", "period": 2, "block": "s-block", "key": "Reactive metal that commonly forms +2 ions and basic oxides/hydroxides."}, {"s": "B", "n": "Boron", "z": 5, "mass": 10.81, "cat": "Metalloid", "state": "Solid", "common": "Boron", "uses": "Borosilicate glass, detergents, ceramics and semiconductor materials.", "history": "Recognized as a new element in 1808 through work by Gay-Lussac and Thénard and by Humphry Davy.", "period": 2, "block": "p-block", "key": "Intermediate properties between metals and nonmetals; many are useful semiconductors."}, {"s": "C", "n": "Carbon", "z": 6, "mass": 12.011, "cat": "Nonmetal", "state": "Solid", "common": "Carbon", "uses": "Steelmaking, graphite electrodes, carbon fibers, fuels and life chemistry.", "history": "Known since antiquity in forms such as charcoal and graphite; diamond was recognized as carbon in the 18th century.", "period": 2, "block": "p-block", "key": "Generally poor electrical conductors (with important exceptions such as graphite). Often form covalent molecules or network solids and commonly gain/share electrons in compounds."}, {"s": "N", "n": "Nitrogen", "z": 7, "mass": 14.007, "cat": "Nonmetal", "state": "Gas", "common": "Nitrogen", "uses": "Fertilizers, ammonia production, inert atmospheres and liquid-nitrogen cooling.", "history": "Discovered by Daniel Rutherford in 1772 as a component of air that did not support combustion.", "period": 2, "block": "p-block", "key": "Generally poor electrical conductors (with important exceptions such as graphite). Often form covalent molecules or network solids and commonly gain/share electrons in compounds."}, {"s": "O", "n": "Oxygen", "z": 8, "mass": 15.999, "cat": "Nonmetal", "state": "Gas", "common": "Oxygen", "uses": "Medical oxygen, steelmaking, welding and chemical manufacturing.", "history": "Discovered independently by Carl Wilhelm Scheele and Joseph Priestley in the 1770s; named by Lavoisier.", "period": 2, "block": "p-block", "key": "Generally poor electrical conductors (with important exceptions such as graphite). Often form covalent molecules or network solids and commonly gain/share electrons in compounds."}, {"s": "F", "n": "Fluorine", "z": 9, "mass": 18.998, "cat": "Halogen", "state": "Gas", "common": "Fluorine", "uses": "Fluorochemical production, fluoropolymers and fluoride chemistry.", "history": "Fluorine was isolated by Henri Moissan in 1886 after many difficult attempts.", "period": 2, "block": "p-block", "key": "Reactive nonmetal family that commonly forms −1 ions and diatomic molecules; reactivity generally decreases down the group."}, {"s": "Ne", "n": "Neon", "z": 10, "mass": 20.18, "cat": "Noble gas", "state": "Gas", "common": "Neon", "uses": "Lighting, lasers and indicator tubes.", "history": "Discovered by William Ramsay and Morris Travers in 1898 from liquefied air.", "period": 2, "block": "p-block", "key": "Very low chemical reactivity under ordinary conditions because the valence shell is filled. Monatomic gases at room conditions."}, {"s": "Na", "n": "Sodium", "z": 11, "mass": 22.99, "cat": "Alkali metal", "state": "Solid", "common": "Sodium (historically called natrium in the symbol Na)", "uses": "Sodium compounds, heat-transfer systems and chemical manufacturing.", "history": "Isolated as a metal by Humphry Davy in 1807.", "period": 3, "block": "s-block", "key": "Soft, reactive metal with one common valence electron; readily forms +1 ions and reacts strongly with water and air."}, {"s": "Mg", "n": "Magnesium", "z": 12, "mass": 24.305, "cat": "Alkaline earth metal", "state": "Solid", "common": "Magnesium", "uses": "Lightweight alloys, flares/fireworks, sacrificial anodes and medicine as compounds.", "history": "Isolated as a metal by Humphry Davy in 1808.", "period": 3, "block": "s-block", "key": "Reactive metal that commonly forms +2 ions and basic oxides/hydroxides."}, {"s": "Al", "n": "Aluminium", "z": 13, "mass": 26.982, "cat": "Post-transition metal", "state": "Solid", "common": "Aluminium", "uses": "Aircraft and vehicle alloys, cans, foil, construction and electrical conductors.", "history": "Identified by Hans Christian Ørsted in 1825; Friedrich Wöhler produced purer aluminium in 1827.", "period": 3, "block": "p-block", "key": "Metallic elements generally softer/lower-melting than many transition metals; chemistry commonly involves positive oxidation states."}, {"s": "Si", "n": "Silicon", "z": 14, "mass": 28.085, "cat": "Metalloid", "state": "Solid", "common": "Silicon", "uses": "Computer chips, solar cells, glass, silicones and alloys.", "history": "Identified by Jöns Jacob Berzelius in 1824.", "period": 3, "block": "p-block", "key": "Intermediate properties between metals and nonmetals; many are useful semiconductors."}, {"s": "P", "n": "Phosphorus", "z": 15, "mass": 30.974, "cat": "Nonmetal", "state": "Solid", "common": "Phosphorus", "uses": "Fertilizers, detergents, matches and specialty chemicals.", "history": "Discovered by Hennig Brand in 1669 while investigating urine residues.", "period": 3, "block": "p-block", "key": "Generally poor electrical conductors (with important exceptions such as graphite). Often form covalent molecules or network solids and commonly gain/share electrons in compounds."}, {"s": "S", "n": "Sulfur", "z": 16, "mass": 32.06, "cat": "Nonmetal", "state": "Solid", "common": "Sulfur", "uses": "Sulfuric acid production, fertilizers, rubber vulcanization and chemicals.", "history": "Known since antiquity; recognized as an element in the 18th century.", "period": 3, "block": "p-block", "key": "Generally poor electrical conductors (with important exceptions such as graphite). Often form covalent molecules or network solids and commonly gain/share electrons in compounds."}, {"s": "Cl", "n": "Chlorine", "z": 17, "mass": 35.45, "cat": "Halogen", "state": "Gas", "common": "Chlorine", "uses": "Water disinfection, PVC production and many industrial chemicals.", "history": "Discovered by Carl Wilhelm Scheele in 1774; recognized as an element by Humphry Davy in 1810.", "period": 3, "block": "p-block", "key": "Reactive nonmetal family that commonly forms −1 ions and diatomic molecules; reactivity generally decreases down the group."}, {"s": "Ar", "n": "Argon", "z": 18, "mass": 39.948, "cat": "Noble gas", "state": "Gas", "common": "Argon", "uses": "Welding shield gas, lighting and inert atmospheres.", "history": "Discovered by Lord Rayleigh and William Ramsay in 1894.", "period": 3, "block": "p-block", "key": "Very low chemical reactivity under ordinary conditions because the valence shell is filled. Monatomic gases at room conditions."}, {"s": "K", "n": "Potassium", "z": 19, "mass": 39.098, "cat": "Alkali metal", "state": "Solid", "common": "Potassium (kalium in the symbol K)", "uses": "Fertilizers and potassium compounds; important biological electrolyte as an ion.", "history": "Isolated as a metal by Humphry Davy in 1807.", "period": 4, "block": "s-block", "key": "Soft, reactive metal with one common valence electron; readily forms +1 ions and reacts strongly with water and air."}, {"s": "Ca", "n": "Calcium", "z": 20, "mass": 40.078, "cat": "Alkaline earth metal", "state": "Solid", "common": "Calcium", "uses": "Cement and lime, metallurgy and calcium compounds; structural mineral in biology.", "history": "Isolated as a metal by Humphry Davy in 1808.", "period": 4, "block": "s-block", "key": "Reactive metal that commonly forms +2 ions and basic oxides/hydroxides."}, {"s": "Sc", "n": "Scandium", "z": 21, "mass": 44.956, "cat": "Transition metal", "state": "Solid", "common": "Scandium", "uses": "Specialty alloys, lighting and research materials.", "history": "Discovered by Lars Fredrik Nilson in 1879.", "period": 4, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Ti", "n": "Titanium", "z": 22, "mass": 47.867, "cat": "Transition metal", "state": "Solid", "common": "Titanium", "uses": "Strong lightweight alloys, pigments (TiO₂) and implants.", "history": "Discovered by William Gregor in 1791; named titanium by Martin Klaproth in 1795.", "period": 4, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "V", "n": "Vanadium", "z": 23, "mass": 50.942, "cat": "Transition metal", "state": "Solid", "common": "Vanadium", "uses": "Steel and alloy production, catalysts and some flow-battery systems.", "history": "Discovered by Andrés Manuel del Río in 1801; rediscovered by Nils Sefström in 1830.", "period": 4, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Cr", "n": "Chromium", "z": 24, "mass": 52.0, "cat": "Transition metal", "state": "Solid", "common": "Chromium", "uses": "Stainless steel, plating, pigments and high-temperature alloys.", "history": "Discovered by Louis Nicolas Vauquelin in 1797.", "period": 4, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Mn", "n": "Manganese", "z": 25, "mass": 54.938, "cat": "Transition metal", "state": "Solid", "common": "Manganese", "uses": "Steelmaking, batteries and manganese compounds.", "history": "Recognized as an element by Carl Wilhelm Scheele's work and isolated by Johan Gottlieb Gahn in 1774.", "period": 4, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Fe", "n": "Iron", "z": 26, "mass": 55.845, "cat": "Transition metal", "state": "Solid", "common": "Iron (ferrum in the symbol Fe)", "uses": "Steel and cast iron, construction, machines and biological iron chemistry.", "history": "Known since prehistory; iron objects are among the oldest worked metals.", "period": 4, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Co", "n": "Cobalt", "z": 27, "mass": 58.933, "cat": "Transition metal", "state": "Solid", "common": "Cobalt", "uses": "Superalloys, batteries, catalysts and pigments.", "history": "Recognized as an element and isolated by Georg Brandt in the 1730s.", "period": 4, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Ni", "n": "Nickel", "z": 28, "mass": 58.693, "cat": "Transition metal", "state": "Solid", "common": "Nickel", "uses": "Stainless steel, superalloys, plating and rechargeable batteries.", "history": "Discovered by Axel Fredrik Cronstedt in 1751.", "period": 4, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Cu", "n": "Copper", "z": 29, "mass": 63.546, "cat": "Transition metal", "state": "Solid", "common": "Copper (cuprum in the symbol Cu)", "uses": "Electrical wiring, plumbing, heat exchangers and alloys.", "history": "Known and used since prehistoric times.", "period": 4, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Zn", "n": "Zinc", "z": 30, "mass": 65.38, "cat": "Transition metal", "state": "Solid", "common": "Zinc", "uses": "Galvanizing steel, brass, batteries and zinc compounds.", "history": "Known in alloys for centuries; metallic zinc was isolated in the 18th century, with credit often associated with Andreas Marggraf.", "period": 4, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Ga", "n": "Gallium", "z": 31, "mass": 69.723, "cat": "Post-transition metal", "state": "Solid", "common": "Gallium", "uses": "Semiconductors, LEDs and high-frequency electronics.", "history": "Discovered by Paul-Émile Lecoq de Boisbaudran in 1875.", "period": 4, "block": "p-block", "key": "Metallic elements generally softer/lower-melting than many transition metals; chemistry commonly involves positive oxidation states."}, {"s": "Ge", "n": "Germanium", "z": 32, "mass": 72.63, "cat": "Metalloid", "state": "Solid", "common": "Germanium", "uses": "Fiber optics, infrared optics and semiconductor applications.", "history": "Discovered by Clemens Winkler in 1886.", "period": 4, "block": "p-block", "key": "Intermediate properties between metals and nonmetals; many are useful semiconductors."}, {"s": "As", "n": "Arsenic", "z": 33, "mass": 74.922, "cat": "Metalloid", "state": "Solid", "common": "Arsenic", "uses": "Semiconductor materials and specialty alloys; many arsenic compounds are highly toxic.", "history": "Known since antiquity; recognized as an element in early modern chemistry.", "period": 4, "block": "p-block", "key": "Intermediate properties between metals and nonmetals; many are useful semiconductors."}, {"s": "Se", "n": "Selenium", "z": 34, "mass": 78.971, "cat": "Nonmetal", "state": "Solid", "common": "Selenium", "uses": "Glassmaking, electronics, solar materials and pigments.", "history": "Discovered by Jöns Jacob Berzelius in 1817.", "period": 4, "block": "p-block", "key": "Generally poor electrical conductors (with important exceptions such as graphite). Often form covalent molecules or network solids and commonly gain/share electrons in compounds."}, {"s": "Br", "n": "Bromine", "z": 35, "mass": 79.904, "cat": "Halogen", "state": "Liquid", "common": "Bromine", "uses": "Flame-retardant chemistry, photographic chemistry and brominated compounds.", "history": "Discovered independently by Carl Jacob Löwig and Antoine Jérôme Balard in 1826.", "period": 4, "block": "p-block", "key": "Reactive nonmetal family that commonly forms −1 ions and diatomic molecules; reactivity generally decreases down the group."}, {"s": "Kr", "n": "Krypton", "z": 36, "mass": 83.798, "cat": "Noble gas", "state": "Gas", "common": "Krypton", "uses": "Specialty lighting, lasers and insulating-window gas mixtures.", "history": "Discovered by William Ramsay and Morris Travers in 1898.", "period": 4, "block": "p-block", "key": "Very low chemical reactivity under ordinary conditions because the valence shell is filled. Monatomic gases at room conditions."}, {"s": "Rb", "n": "Rubidium", "z": 37, "mass": 85.468, "cat": "Alkali metal", "state": "Solid", "common": "Rubidium", "uses": "Research, atomic clocks and specialty electronics.", "history": "Discovered by Robert Bunsen and Gustav Kirchhoff in 1861.", "period": 5, "block": "s-block", "key": "Soft, reactive metal with one common valence electron; readily forms +1 ions and reacts strongly with water and air."}, {"s": "Sr", "n": "Strontium", "z": 38, "mass": 87.62, "cat": "Alkaline earth metal", "state": "Solid", "common": "Strontium", "uses": "Red fireworks, ceramics and specialty materials.", "history": "Discovered as a new element in the late 18th century; metallic strontium was isolated by Humphry Davy in 1808.", "period": 5, "block": "s-block", "key": "Reactive metal that commonly forms +2 ions and basic oxides/hydroxides."}, {"s": "Y", "n": "Yttrium", "z": 39, "mass": 88.906, "cat": "Transition metal", "state": "Solid", "common": "Yttrium", "uses": "Phosphors, ceramics, lasers and superconducting materials.", "history": "Discovered by Johan Gadolin in 1794.", "period": 5, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Zr", "n": "Zirconium", "z": 40, "mass": 91.224, "cat": "Transition metal", "state": "Solid", "common": "Zirconium", "uses": "Corrosion-resistant alloys, nuclear fuel cladding and ceramics.", "history": "Discovered by Martin Heinrich Klaproth in 1789; isolated by Jöns Jacob Berzelius in 1824.", "period": 5, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Nb", "n": "Niobium", "z": 41, "mass": 92.906, "cat": "Transition metal", "state": "Solid", "common": "Niobium", "uses": "Superalloys, superconducting magnets and specialty steels.", "history": "Discovered by Charles Hatchett in 1801.", "period": 5, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Mo", "n": "Molybdenum", "z": 42, "mass": 95.95, "cat": "Transition metal", "state": "Solid", "common": "Molybdenum", "uses": "Alloy steels, catalysts, lubricants and high-temperature materials.", "history": "Discovered by Carl Wilhelm Scheele in 1778; isolated by Peter Jacob Hjelm in 1781.", "period": 5, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Tc", "n": "Technetium", "z": 43, "mass": 98, "cat": "Transition metal", "state": "Solid", "common": "Technetium", "uses": "Medical diagnostic imaging (Tc-99m) and research.", "history": "First element produced artificially, in 1937 by Carlo Perrier and Emilio Segrè.", "period": 5, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Ru", "n": "Ruthenium", "z": 44, "mass": 101.07, "cat": "Transition metal", "state": "Solid", "common": "Ruthenium", "uses": "Catalysts, electronics, hard coatings and specialty alloys.", "history": "Discovered by Karl Ernst Claus in 1844.", "period": 5, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Rh", "n": "Rhodium", "z": 45, "mass": 102.906, "cat": "Transition metal", "state": "Solid", "common": "Rhodium", "uses": "Automotive catalytic converters, catalysts and reflective/plating applications.", "history": "Discovered by William Hyde Wollaston in 1803.", "period": 5, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Pd", "n": "Palladium", "z": 46, "mass": 106.42, "cat": "Transition metal", "state": "Solid", "common": "Palladium", "uses": "Catalytic converters, catalysts, electronics and hydrogen-related technologies.", "history": "Discovered by William Hyde Wollaston in 1803.", "period": 5, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Ag", "n": "Silver", "z": 47, "mass": 107.868, "cat": "Transition metal", "state": "Solid", "common": "Silver (argentum in the symbol Ag)", "uses": "Electrical contacts, mirrors, jewelry and antimicrobial applications.", "history": "Known since antiquity.", "period": 5, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Cd", "n": "Cadmium", "z": 48, "mass": 112.414, "cat": "Transition metal", "state": "Solid", "common": "Cadmium", "uses": "Specialty batteries, pigments and plating; toxic and increasingly restricted.", "history": "Discovered by Friedrich Stromeyer in 1817.", "period": 5, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "In", "n": "Indium", "z": 49, "mass": 114.818, "cat": "Post-transition metal", "state": "Solid", "common": "Indium", "uses": "Touchscreens/display coatings, solders and semiconductors.", "history": "Discovered by Ferdinand Reich and Hieronymus Theodor Richter in 1863.", "period": 5, "block": "p-block", "key": "Metallic elements generally softer/lower-melting than many transition metals; chemistry commonly involves positive oxidation states."}, {"s": "Sn", "n": "Tin", "z": 50, "mass": 118.71, "cat": "Post-transition metal", "state": "Solid", "common": "Tin", "uses": "Solder, tinplate, alloys and chemical compounds.", "history": "Known since antiquity; tin metallurgy dates to the Bronze Age.", "period": 5, "block": "p-block", "key": "Metallic elements generally softer/lower-melting than many transition metals; chemistry commonly involves positive oxidation states."}, {"s": "Sb", "n": "Antimony", "z": 51, "mass": 121.76, "cat": "Metalloid", "state": "Solid", "common": "Antimony (stibium in the symbol Sb)", "uses": "Flame-retardant systems, alloys and semiconductor materials.", "history": "Known since antiquity.", "period": 5, "block": "p-block", "key": "Intermediate properties between metals and nonmetals; many are useful semiconductors."}, {"s": "Te", "n": "Tellurium", "z": 52, "mass": 127.6, "cat": "Metalloid", "state": "Solid", "common": "Tellurium", "uses": "Solar cells, thermoelectric materials and alloying.", "history": "Discovered by Franz-Joseph Müller von Reichenstein in 1782.", "period": 5, "block": "p-block", "key": "Intermediate properties between metals and nonmetals; many are useful semiconductors."}, {"s": "I", "n": "Iodine", "z": 53, "mass": 126.904, "cat": "Halogen", "state": "Gas", "common": "Iodine", "uses": "Iodized salt, antiseptics, pharmaceuticals and specialty chemistry.", "history": "Discovered by Bernard Courtois in 1811.", "period": 5, "block": "p-block", "key": "Reactive nonmetal family that commonly forms −1 ions and diatomic molecules; reactivity generally decreases down the group."}, {"s": "Xe", "n": "Xenon", "z": 54, "mass": 131.293, "cat": "Noble gas", "state": "Gas", "common": "Xenon", "uses": "High-intensity lamps, ion propulsion research and medical/anesthetic research.", "history": "Discovered by William Ramsay and Morris Travers in 1898.", "period": 5, "block": "p-block", "key": "Very low chemical reactivity under ordinary conditions because the valence shell is filled. Monatomic gases at room conditions."}, {"s": "Cs", "n": "Caesium", "z": 55, "mass": 132.905, "cat": "Alkali metal", "state": "Solid", "common": "Caesium", "uses": "Atomic clocks, vacuum devices and research.", "history": "Discovered by Robert Bunsen and Gustav Kirchhoff in 1860.", "period": 6, "block": "s-block", "key": "Soft, reactive metal with one common valence electron; readily forms +1 ions and reacts strongly with water and air."}, {"s": "Ba", "n": "Barium", "z": 56, "mass": 137.327, "cat": "Alkaline earth metal", "state": "Solid", "common": "Barium", "uses": "Drilling fluids and barium compounds; green fireworks.", "history": "Identified as an element by Humphry Davy in 1808.", "period": 6, "block": "s-block", "key": "Reactive metal that commonly forms +2 ions and basic oxides/hydroxides."}, {"s": "La", "n": "Lanthanum", "z": 57, "mass": 138.905, "cat": "Lanthanide", "state": "Solid", "common": "Lanthanum", "uses": "Optical glass, catalysts, battery materials and research.", "history": "Discovered by Carl Gustaf Mosander in 1838.", "period": 6, "block": "f-block", "key": "f-block metal, generally electropositive and commonly +3; many have useful magnetic and optical properties."}, {"s": "Ce", "n": "Cerium", "z": 58, "mass": 140.116, "cat": "Lanthanide", "state": "Solid", "common": "Cerium", "uses": "Glass polishing, catalytic converters and lighter-flint alloys.", "history": "Discovered independently by Jöns Jacob Berzelius and Wilhelm Hisinger and by Martin Heinrich Klaproth in 1803.", "period": 6, "block": "f-block", "key": "f-block metal, generally electropositive and commonly +3; many have useful magnetic and optical properties."}, {"s": "Pr", "n": "Praseodymium", "z": 59, "mass": 140.908, "cat": "Lanthanide", "state": "Solid", "common": "Praseodymium", "uses": "Magnets, specialty glass and high-performance alloys.", "history": "Separated from didymium by Carl Auer von Welsbach in 1885.", "period": 6, "block": "f-block", "key": "f-block metal, generally electropositive and commonly +3; many have useful magnetic and optical properties."}, {"s": "Nd", "n": "Neodymium", "z": 60, "mass": 144.242, "cat": "Lanthanide", "state": "Solid", "common": "Neodymium", "uses": "Very strong permanent magnets, lasers and electronics.", "history": "Separated from didymium by Carl Auer von Welsbach in 1885.", "period": 6, "block": "f-block", "key": "f-block metal, generally electropositive and commonly +3; many have useful magnetic and optical properties."}, {"s": "Pm", "n": "Promethium", "z": 61, "mass": 145, "cat": "Lanthanide", "state": "Solid", "common": "Promethium", "uses": "Research, thickness gauges and specialized nuclear batteries.", "history": "First produced and identified in 1945 by Jacob Marinsky, Lawrence Glendenin and Charles Coryell.", "period": 6, "block": "f-block", "key": "f-block metal, generally electropositive and commonly +3; many have useful magnetic and optical properties."}, {"s": "Sm", "n": "Samarium", "z": 62, "mass": 150.36, "cat": "Lanthanide", "state": "Solid", "common": "Samarium", "uses": "Permanent magnets, lasers and nuclear-reactor control materials.", "history": "Discovered by Paul-Émile Lecoq de Boisbaudran in 1879.", "period": 6, "block": "f-block", "key": "f-block metal, generally electropositive and commonly +3; many have useful magnetic and optical properties."}, {"s": "Eu", "n": "Europium", "z": 63, "mass": 151.964, "cat": "Lanthanide", "state": "Solid", "common": "Europium", "uses": "Red/blue phosphors, display materials and security inks.", "history": "Discovered by Eugène-Anatole Demarçay in 1901.", "period": 6, "block": "f-block", "key": "f-block metal, generally electropositive and commonly +3; many have useful magnetic and optical properties."}, {"s": "Gd", "n": "Gadolinium", "z": 64, "mass": 157.25, "cat": "Lanthanide", "state": "Solid", "common": "Gadolinium", "uses": "MRI contrast agents, neutron shielding and research.", "history": "Discovered by Jean Charles Galissard de Marignac in 1880.", "period": 6, "block": "f-block", "key": "f-block metal, generally electropositive and commonly +3; many have useful magnetic and optical properties."}, {"s": "Tb", "n": "Terbium", "z": 65, "mass": 158.925, "cat": "Lanthanide", "state": "Solid", "common": "Terbium", "uses": "Green phosphors, magnetostrictive materials and specialty electronics.", "history": "Discovered by Carl Gustaf Mosander in 1843.", "period": 6, "block": "f-block", "key": "f-block metal, generally electropositive and commonly +3; many have useful magnetic and optical properties."}, {"s": "Dy", "n": "Dysprosium", "z": 66, "mass": 162.5, "cat": "Lanthanide", "state": "Solid", "common": "Dysprosium", "uses": "High-performance permanent magnets and specialty alloys.", "history": "Discovered by Paul-Émile Lecoq de Boisbaudran in 1886.", "period": 6, "block": "f-block", "key": "f-block metal, generally electropositive and commonly +3; many have useful magnetic and optical properties."}, {"s": "Ho", "n": "Holmium", "z": 67, "mass": 164.93, "cat": "Lanthanide", "state": "Solid", "common": "Holmium", "uses": "Lasers, magnetic materials and research.", "history": "Discovered independently by Marc Delafontaine and Jacques-Louis Soret in 1878, with Per Teodor Cleve also identifying it.", "period": 6, "block": "f-block", "key": "f-block metal, generally electropositive and commonly +3; many have useful magnetic and optical properties."}, {"s": "Er", "n": "Erbium", "z": 68, "mass": 167.259, "cat": "Lanthanide", "state": "Solid", "common": "Erbium", "uses": "Fiber-optic amplifiers, lasers and pink glass.", "history": "Discovered by Carl Gustaf Mosander in 1843.", "period": 6, "block": "f-block", "key": "f-block metal, generally electropositive and commonly +3; many have useful magnetic and optical properties."}, {"s": "Tm", "n": "Thulium", "z": 69, "mass": 168.934, "cat": "Lanthanide", "state": "Solid", "common": "Thulium", "uses": "Lasers, portable X-ray sources and research.", "history": "Discovered by Per Teodor Cleve in 1879.", "period": 6, "block": "f-block", "key": "f-block metal, generally electropositive and commonly +3; many have useful magnetic and optical properties."}, {"s": "Yb", "n": "Ytterbium", "z": 70, "mass": 173.045, "cat": "Lanthanide", "state": "Solid", "common": "Ytterbium", "uses": "Lasers, fiber optics, atomic clocks and research.", "history": "Discovered by Jean Charles Galissard de Marignac in 1878.", "period": 6, "block": "f-block", "key": "f-block metal, generally electropositive and commonly +3; many have useful magnetic and optical properties."}, {"s": "Lu", "n": "Lutetium", "z": 71, "mass": 174.967, "cat": "Lanthanide", "state": "Solid", "common": "Lutetium", "uses": "PET detector materials, catalysts and research.", "history": "Discovered independently by Georges Urbain and Carl Auer von Welsbach in 1907.", "period": 6, "block": "f-block", "key": "f-block metal, generally electropositive and commonly +3; many have useful magnetic and optical properties."}, {"s": "Hf", "n": "Hafnium", "z": 72, "mass": 178.49, "cat": "Transition metal", "state": "Solid", "common": "Hafnium", "uses": "Nuclear control rods, superalloys and high-temperature ceramics.", "history": "Discovered by Dirk Coster and George de Hevesy in 1923.", "period": 6, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Ta", "n": "Tantalum", "z": 73, "mass": 180.948, "cat": "Transition metal", "state": "Solid", "common": "Tantalum", "uses": "Capacitors, corrosion-resistant equipment and surgical materials.", "history": "Discovered by Anders Gustaf Ekeberg in 1802.", "period": 6, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "W", "n": "Tungsten", "z": 74, "mass": 183.84, "cat": "Transition metal", "state": "Solid", "common": "Tungsten (wolfram in the symbol W)", "uses": "Cutting tools, high-temperature components and lamp filaments.", "history": "Discovered as a distinct element by the Elhuyar brothers in 1783.", "period": 6, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Re", "n": "Rhenium", "z": 75, "mass": 186.207, "cat": "Transition metal", "state": "Solid", "common": "Rhenium", "uses": "Superalloys for jet engines and catalysts.", "history": "Discovered by Ida Noddack, Walter Noddack and Otto Berg in 1925.", "period": 6, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Os", "n": "Osmium", "z": 76, "mass": 190.23, "cat": "Transition metal", "state": "Solid", "common": "Osmium", "uses": "Specialty alloys, catalysts and instrument tips; compounds can be highly toxic.", "history": "Discovered by Smithson Tennant in 1803.", "period": 6, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Ir", "n": "Iridium", "z": 77, "mass": 192.217, "cat": "Transition metal", "state": "Solid", "common": "Iridium", "uses": "Spark plugs, crucibles, catalysts and corrosion-resistant alloys.", "history": "Discovered by Smithson Tennant in 1803.", "period": 6, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Pt", "n": "Platinum", "z": 78, "mass": 195.084, "cat": "Transition metal", "state": "Solid", "common": "Platinum", "uses": "Catalysts, laboratory equipment, jewelry and medical applications.", "history": "Known to pre-Columbian peoples; studied in Europe in the 18th century.", "period": 6, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Au", "n": "Gold", "z": 79, "mass": 196.967, "cat": "Transition metal", "state": "Solid", "common": "Gold (aurum in the symbol Au)", "uses": "Electronics, jewelry, dentistry and chemical catalysts.", "history": "Known since antiquity.", "period": 6, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Hg", "n": "Mercury", "z": 80, "mass": 200.592, "cat": "Transition metal", "state": "Liquid", "common": "Mercury (quicksilver)", "uses": "Historical thermometers and switches; some industrial uses. Toxic, so use is restricted.", "history": "Known since antiquity.", "period": 6, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Tl", "n": "Thallium", "z": 81, "mass": 204.38, "cat": "Post-transition metal", "state": "Solid", "common": "Thallium", "uses": "Specialty electronics, optics and research; highly toxic.", "history": "Discovered by William Crookes in 1861.", "period": 6, "block": "p-block", "key": "Metallic elements generally softer/lower-melting than many transition metals; chemistry commonly involves positive oxidation states."}, {"s": "Pb", "n": "Lead", "z": 82, "mass": 207.2, "cat": "Post-transition metal", "state": "Solid", "common": "Lead (plumbum in the symbol Pb)", "uses": "Batteries, radiation shielding and specialty uses; toxic and heavily regulated.", "history": "Known since antiquity.", "period": 6, "block": "p-block", "key": "Metallic elements generally softer/lower-melting than many transition metals; chemistry commonly involves positive oxidation states."}, {"s": "Bi", "n": "Bismuth", "z": 83, "mass": 208.98, "cat": "Post-transition metal", "state": "Solid", "common": "Bismuth", "uses": "Low-melting alloys, pharmaceuticals, pigments and specialty materials.", "history": "Known since antiquity; recognized as distinct from lead and tin in the 18th century.", "period": 6, "block": "p-block", "key": "Metallic elements generally softer/lower-melting than many transition metals; chemistry commonly involves positive oxidation states."}, {"s": "Po", "n": "Polonium", "z": 84, "mass": 209, "cat": "Post-transition metal", "state": "Solid", "common": "Polonium", "uses": "Research and specialized radiation sources; highly radioactive.", "history": "Discovered by Marie and Pierre Curie in 1898.", "period": 6, "block": "p-block", "key": "Metallic elements generally softer/lower-melting than many transition metals; chemistry commonly involves positive oxidation states."}, {"s": "At", "n": "Astatine", "z": 85, "mass": 210, "cat": "Halogen", "state": "Solid", "common": "Astatine", "uses": "Research only; extremely rare and radioactive.", "history": "First produced in 1940 by Dale Corson, Kenneth MacKenzie and Emilio Segrè.", "period": 6, "block": "p-block", "key": "Reactive nonmetal family that commonly forms −1 ions and diatomic molecules; reactivity generally decreases down the group."}, {"s": "Rn", "n": "Radon", "z": 86, "mass": 222, "cat": "Noble gas", "state": "Gas", "common": "Radon", "uses": "Research and radiation studies; radioactive noble gas with no routine consumer use.", "history": "Discovered in 1900 by Friedrich Ernst Dorn as a radioactive gas.", "period": 6, "block": "p-block", "key": "Very low chemical reactivity under ordinary conditions because the valence shell is filled. Monatomic gases at room conditions."}, {"s": "Fr", "n": "Francium", "z": 87, "mass": 223, "cat": "Alkali metal", "state": "Solid", "common": "Francium", "uses": "Research only; extremely rare and radioactive.", "history": "Discovered by Marguerite Perey in 1939.", "period": 7, "block": "s-block", "key": "Soft, reactive metal with one common valence electron; readily forms +1 ions and reacts strongly with water and air."}, {"s": "Ra", "n": "Radium", "z": 88, "mass": 226, "cat": "Alkaline earth metal", "state": "Solid", "common": "Radium", "uses": "Historical radiological uses and research; highly radioactive.", "history": "Discovered by Marie and Pierre Curie in 1898.", "period": 7, "block": "s-block", "key": "Reactive metal that commonly forms +2 ions and basic oxides/hydroxides."}, {"s": "Ac", "n": "Actinium", "z": 89, "mass": 227, "cat": "Actinide", "state": "Solid", "common": "Actinium", "uses": "Research and targeted radiochemistry; radioactive.", "history": "Discovered by André-Louis Debierne in 1899.", "period": 7, "block": "f-block", "key": "f-block elements with radioactive nuclei; many have multiple oxidation states and are important in nuclear science."}, {"s": "Th", "n": "Thorium", "z": 90, "mass": 232.038, "cat": "Actinide", "state": "Solid", "common": "Thorium", "uses": "Specialty nuclear research and historical gas-mantle uses; radioactive.", "history": "Discovered by Morten Thrane Esmark in a mineral in 1828; identified as an element by Jöns Jacob Berzelius.", "period": 7, "block": "f-block", "key": "f-block elements with radioactive nuclei; many have multiple oxidation states and are important in nuclear science."}, {"s": "Pa", "n": "Protactinium", "z": 91, "mass": 231.036, "cat": "Actinide", "state": "Solid", "common": "Protactinium", "uses": "Research; radioactive and very rare.", "history": "Discovered by Lise Meitner and Otto Hahn in 1917; later characterized by Aristid von Grosse.", "period": 7, "block": "f-block", "key": "f-block elements with radioactive nuclei; many have multiple oxidation states and are important in nuclear science."}, {"s": "U", "n": "Uranium", "z": 92, "mass": 238.029, "cat": "Actinide", "state": "Solid", "common": "Uranium", "uses": "Nuclear fuel and research; radioactive.", "history": "Discovered by Martin Heinrich Klaproth in 1789.", "period": 7, "block": "f-block", "key": "f-block elements with radioactive nuclei; many have multiple oxidation states and are important in nuclear science."}, {"s": "Np", "n": "Neptunium", "z": 93, "mass": 237, "cat": "Actinide", "state": "Solid", "common": "Neptunium", "uses": "Nuclear research and specialized isotope production.", "history": "First identified by Edwin McMillan and Philip Abelson in 1940.", "period": 7, "block": "f-block", "key": "f-block elements with radioactive nuclei; many have multiple oxidation states and are important in nuclear science."}, {"s": "Pu", "n": "Plutonium", "z": 94, "mass": 244, "cat": "Actinide", "state": "Solid", "common": "Plutonium", "uses": "Nuclear energy/research and isotope applications; radioactive and tightly controlled.", "history": "First produced by Glenn Seaborg, Edwin McMillan, Joseph Kennedy and Arthur Wahl in 1940.", "period": 7, "block": "f-block", "key": "f-block elements with radioactive nuclei; many have multiple oxidation states and are important in nuclear science."}, {"s": "Am", "n": "Americium", "z": 95, "mass": 243, "cat": "Actinide", "state": "Solid", "common": "Americium", "uses": "Smoke-detector ionization sources (Am-241) and research; radioactive.", "history": "First produced by Glenn Seaborg, Leon Morgan, Ralph James and Albert Ghiorso in 1944.", "period": 7, "block": "f-block", "key": "f-block elements with radioactive nuclei; many have multiple oxidation states and are important in nuclear science."}, {"s": "Cm", "n": "Curium", "z": 96, "mass": 247, "cat": "Actinide", "state": "Solid", "common": "Curium", "uses": "Scientific research and specialized radioisotope sources.", "history": "First produced by Glenn Seaborg, Ralph James and Albert Ghiorso in 1944.", "period": 7, "block": "f-block", "key": "f-block elements with radioactive nuclei; many have multiple oxidation states and are important in nuclear science."}, {"s": "Bk", "n": "Berkelium", "z": 97, "mass": 247, "cat": "Actinide", "state": "Solid", "common": "Berkelium", "uses": "Research only; radioactive.", "history": "First produced by Stanley Thompson, Kenneth Street Jr., Albert Ghiorso and Glenn Seaborg in 1949.", "period": 7, "block": "f-block", "key": "f-block elements with radioactive nuclei; many have multiple oxidation states and are important in nuclear science."}, {"s": "Cf", "n": "Californium", "z": 98, "mass": 251, "cat": "Actinide", "state": "Solid", "common": "Californium", "uses": "Neutron sources and research; radioactive.", "history": "First produced by Stanley Thompson, Kenneth Street Jr., Albert Ghiorso and Glenn Seaborg in 1950.", "period": 7, "block": "f-block", "key": "f-block elements with radioactive nuclei; many have multiple oxidation states and are important in nuclear science."}, {"s": "Es", "n": "Einsteinium", "z": 99, "mass": 252, "cat": "Actinide", "state": "Solid", "common": "Einsteinium", "uses": "Research only; radioactive.", "history": "First identified in 1952 by a team led by Albert Ghiorso from debris of a thermonuclear test.", "period": 7, "block": "f-block", "key": "f-block elements with radioactive nuclei; many have multiple oxidation states and are important in nuclear science."}, {"s": "Fm", "n": "Fermium", "z": 100, "mass": 257, "cat": "Actinide", "state": "Solid", "common": "Fermium", "uses": "Research only; radioactive.", "history": "First identified in 1952 from thermonuclear-test debris by a team led by Albert Ghiorso.", "period": 7, "block": "f-block", "key": "f-block elements with radioactive nuclei; many have multiple oxidation states and are important in nuclear science."}, {"s": "Md", "n": "Mendelevium", "z": 101, "mass": 258, "cat": "Actinide", "state": "Solid", "common": "Mendelevium", "uses": "Research only; radioactive.", "history": "First produced by a team led by Albert Ghiorso in 1955.", "period": 7, "block": "f-block", "key": "f-block elements with radioactive nuclei; many have multiple oxidation states and are important in nuclear science."}, {"s": "No", "n": "Nobelium", "z": 102, "mass": 259, "cat": "Actinide", "state": "Solid", "common": "Nobelium", "uses": "Research only; radioactive.", "history": "First identified in 1958 by a team at the Nobel Institute in Stockholm; later confirmed elsewhere.", "period": 7, "block": "f-block", "key": "f-block elements with radioactive nuclei; many have multiple oxidation states and are important in nuclear science."}, {"s": "Lr", "n": "Lawrencium", "z": 103, "mass": 266, "cat": "Actinide", "state": "Solid", "common": "Lawrencium", "uses": "Research only; radioactive.", "history": "First produced in 1961 by a team led by Albert Ghiorso.", "period": 7, "block": "f-block", "key": "f-block elements with radioactive nuclei; many have multiple oxidation states and are important in nuclear science."}, {"s": "Rf", "n": "Rutherfordium", "z": 104, "mass": 267, "cat": "Transition metal", "state": "Solid", "common": "Rutherfordium", "uses": "Research only; superheavy-element research.", "history": "First reported in 1964 by a Soviet team at Dubna; independently studied at Berkeley.", "period": 7, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Db", "n": "Dubnium", "z": 105, "mass": 268, "cat": "Transition metal", "state": "Solid", "common": "Dubnium", "uses": "Research only; superheavy-element research.", "history": "First produced in 1967 by teams at Dubna and Berkeley.", "period": 7, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Sg", "n": "Seaborgium", "z": 106, "mass": 269, "cat": "Transition metal", "state": "Solid", "common": "Seaborgium", "uses": "Research only; superheavy-element research.", "history": "First produced in 1974 by teams at Berkeley and Dubna.", "period": 7, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Bh", "n": "Bohrium", "z": 107, "mass": 270, "cat": "Transition metal", "state": "Solid", "common": "Bohrium", "uses": "Research only; superheavy-element research.", "history": "First produced in 1981 by a team at GSI Darmstadt.", "period": 7, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Hs", "n": "Hassium", "z": 108, "mass": 277, "cat": "Transition metal", "state": "Solid", "common": "Hassium", "uses": "Research only; superheavy-element research.", "history": "First produced in 1984 by a GSI Darmstadt team.", "period": 7, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Mt", "n": "Meitnerium", "z": 109, "mass": 278, "cat": "Transition metal", "state": "Solid", "common": "Meitnerium", "uses": "Research only; superheavy-element research.", "history": "First produced in 1982 by a GSI Darmstadt team.", "period": 7, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Ds", "n": "Darmstadtium", "z": 110, "mass": 281, "cat": "Transition metal", "state": "Solid", "common": "Darmstadtium", "uses": "Research only; superheavy-element research.", "history": "First produced in 1994 by a GSI Darmstadt team.", "period": 7, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Rg", "n": "Roentgenium", "z": 111, "mass": 282, "cat": "Transition metal", "state": "Solid", "common": "Roentgenium", "uses": "Research only; superheavy-element research.", "history": "First produced in 1994 by a GSI Darmstadt team.", "period": 7, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Cn", "n": "Copernicium", "z": 112, "mass": 285, "cat": "Transition metal", "state": "Solid", "common": "Copernicium", "uses": "Research only; superheavy-element research.", "history": "First produced in 1996 by a GSI Darmstadt team.", "period": 7, "block": "d-block", "key": "Metal with variable oxidation states and often colored compounds/complexes; good electrical/thermal conductors in elemental form."}, {"s": "Nh", "n": "Nihonium", "z": 113, "mass": 286, "cat": "Post-transition metal", "state": "Solid", "common": "Nihonium", "uses": "Research only; superheavy-element research.", "history": "First produced in 2003 by a collaboration at Dubna and Lawrence Livermore National Laboratory.", "period": 7, "block": "p-block", "key": "Metallic elements generally softer/lower-melting than many transition metals; chemistry commonly involves positive oxidation states."}, {"s": "Fl", "n": "Flerovium", "z": 114, "mass": 289, "cat": "Post-transition metal", "state": "Solid", "common": "Flerovium", "uses": "Research only; superheavy-element research.", "history": "First reported in 1998/1999 by a Dubna–Livermore collaboration.", "period": 7, "block": "p-block", "key": "Metallic elements generally softer/lower-melting than many transition metals; chemistry commonly involves positive oxidation states."}, {"s": "Mc", "n": "Moscovium", "z": 115, "mass": 290, "cat": "Post-transition metal", "state": "Solid", "common": "Moscovium", "uses": "Research only; superheavy-element research.", "history": "First reported in 2003 by a Dubna–Livermore collaboration; later confirmed.", "period": 7, "block": "p-block", "key": "Metallic elements generally softer/lower-melting than many transition metals; chemistry commonly involves positive oxidation states."}, {"s": "Lv", "n": "Livermorium", "z": 116, "mass": 293, "cat": "Post-transition metal", "state": "Solid", "common": "Livermorium", "uses": "Research only; superheavy-element research.", "history": "First reported in 2000 by a Dubna–Livermore collaboration.", "period": 7, "block": "p-block", "key": "Metallic elements generally softer/lower-melting than many transition metals; chemistry commonly involves positive oxidation states."}, {"s": "Ts", "n": "Tennessine", "z": 117, "mass": 294, "cat": "Halogen", "state": "Solid", "common": "Tennessine", "uses": "Research only; superheavy-element research.", "history": "First reported in 2010 by a Dubna–Livermore–Oak Ridge collaboration.", "period": 7, "block": "p-block", "key": "Reactive nonmetal family that commonly forms −1 ions and diatomic molecules; reactivity generally decreases down the group."}, {"s": "Og", "n": "Oganesson", "z": 118, "mass": 294, "cat": "Noble gas", "state": "Gas", "common": "Oganesson", "uses": "Research only; superheavy-element research.", "history": "First reported in 2002 by a Dubna–Livermore collaboration; confirmed in later work.", "period": 7, "block": "p-block", "key": "Very low chemical reactivity under ordinary conditions because the valence shell is filled. Monatomic gases at room conditions."}];
+const compounds={"H-O": ["H₂O", "Water", "Molecular compound", "Liquid"], "H-Cl": ["HCl", "Hydrogen chloride", "Molecular compound", "Gas"], "H-F": ["HF", "Hydrogen fluoride", "Molecular compound", "Gas"], "H-N": ["NH₃", "Ammonia", "Molecular compound", "Gas"], "H-C": ["CH₄", "Methane", "Molecular compound", "Gas"], "H-S": ["H₂S", "Hydrogen sulfide", "Molecular compound", "Gas"], "H-Br": ["HBr", "Hydrogen bromide", "Molecular compound", "Gas"], "H-I": ["HI", "Hydrogen iodide", "Molecular compound", "Gas"], "C-O": ["CO₂", "Carbon dioxide", "Molecular compound", "Gas"], "C-S": ["CS₂", "Carbon disulfide", "Molecular compound", "Liquid"], "C-Cl": ["CCl₄", "Carbon tetrachloride", "Molecular compound", "Liquid"], "N-O": ["NO", "Nitric oxide", "Molecular compound", "Gas"], "N-F": ["NF₃", "Nitrogen trifluoride", "Molecular compound", "Gas"], "N-Cl": ["NCl₃", "Nitrogen trichloride", "Molecular compound", "Liquid"], "O-F": ["OF₂", "Oxygen difluoride", "Molecular compound", "Gas"], "S-O": ["SO₂", "Sulfur dioxide", "Molecular compound", "Gas"], "S-F": ["SF₆", "Sulfur hexafluoride", "Molecular compound", "Gas"], "P-O": ["P₄O₁₀", "Phosphorus pentoxide", "Covalent compound", "Solid"], "P-Cl": ["PCl₃", "Phosphorus trichloride", "Molecular compound", "Liquid"], "Si-O": ["SiO₂", "Silicon dioxide", "Network covalent solid", "Solid"], "Si-F": ["SiF₄", "Silicon tetrafluoride", "Molecular compound", "Gas"], "Na-Cl": ["NaCl", "Sodium chloride", "Ionic compound", "Solid"], "Na-O": ["Na₂O", "Sodium oxide", "Ionic compound", "Solid"], "Na-H": ["NaH", "Sodium hydride", "Ionic hydride", "Solid"], "Na-F": ["NaF", "Sodium fluoride", "Ionic compound", "Solid"], "K-Cl": ["KCl", "Potassium chloride", "Ionic compound", "Solid"], "K-O": ["K₂O", "Potassium oxide", "Ionic compound", "Solid"], "K-H": ["KH", "Potassium hydride", "Ionic hydride", "Solid"], "Ca-Cl": ["CaCl₂", "Calcium chloride", "Ionic compound", "Solid"], "Ca-O": ["CaO", "Calcium oxide", "Ionic compound", "Solid"], "Ca-H": ["CaH₂", "Calcium hydride", "Ionic hydride", "Solid"], "Ca-C": ["CaC₂", "Calcium carbide", "Ionic compound", "Solid"], "Ca-P": ["Ca₃P₂", "Calcium phosphide", "Ionic compound", "Solid"], "Mg-O": ["MgO", "Magnesium oxide", "Ionic compound", "Solid"], "Mg-Cl": ["MgCl₂", "Magnesium chloride", "Ionic compound", "Solid"], "Mg-N": ["Mg₃N₂", "Magnesium nitride", "Ionic compound", "Solid"], "Al-O": ["Al₂O₃", "Aluminium oxide", "Ionic/network solid", "Solid"], "Al-Cl": ["AlCl₃", "Aluminium chloride", "Compound", "Solid"], "Al-N": ["AlN", "Aluminium nitride", "Ceramic compound", "Solid"], "Al-P": ["AlP", "Aluminium phosphide", "Ionic/covalent solid", "Solid"], "Li-F": ["LiF", "Lithium fluoride", "Ionic compound", "Solid"], "Li-Cl": ["LiCl", "Lithium chloride", "Ionic compound", "Solid"], "Li-O": ["Li₂O", "Lithium oxide", "Ionic compound", "Solid"], "Be-F": ["BeF₂", "Beryllium fluoride", "Compound", "Solid"], "B-O": ["B₂O₃", "Boron trioxide", "Covalent network oxide", "Solid"], "B-F": ["BF₃", "Boron trifluoride", "Molecular compound", "Gas"], "Ti-O": ["TiO₂", "Titanium dioxide", "Metal oxide", "Solid"], "Ti-Cl": ["TiCl₄", "Titanium tetrachloride", "Molecular compound", "Liquid"], "Ti-C": ["TiC", "Titanium carbide", "Ceramic compound", "Solid"], "V-O": ["V₂O₅", "Vanadium pentoxide", "Metal oxide", "Solid"], "Cr-O": ["Cr₂O₃", "Chromium(III) oxide", "Metal oxide", "Solid"], "Cr-Cl": ["CrCl₃", "Chromium(III) chloride", "Ionic compound", "Solid"], "Mn-O": ["MnO₂", "Manganese dioxide", "Metal oxide", "Solid"], "Mn-Cl": ["MnCl₂", "Manganese(II) chloride", "Ionic compound", "Solid"], "Fe-O": ["Fe₂O₃ / Fe₃O₄", "Iron oxides", "Multiple compounds", "Solid"], "Fe-Cl": ["FeCl₂ / FeCl₃", "Iron chlorides", "Multiple compounds", "Solid"], "Fe-S": ["FeS / FeS₂", "Iron sulfides", "Multiple compounds", "Solid"], "Co-O": ["CoO / Co₃O₄", "Cobalt oxides", "Multiple compounds", "Solid"], "Ni-O": ["NiO", "Nickel(II) oxide", "Metal oxide", "Solid"], "Cu-O": ["CuO / Cu₂O", "Copper oxides", "Multiple compounds", "Solid"], "Cu-S": ["CuS / Cu₂S", "Copper sulfides", "Multiple compounds", "Solid"], "Zn-O": ["ZnO", "Zinc oxide", "Metal oxide", "Solid"], "Zn-S": ["ZnS", "Zinc sulfide", "Ionic/covalent solid", "Solid"], "Ag-Cl": ["AgCl", "Silver chloride", "Ionic compound", "Solid"], "Ag-N": ["AgNO₃", "Silver nitrate", "Ionic compound", "Solid"], "Sn-O": ["SnO / SnO₂", "Tin oxides", "Multiple compounds", "Solid"], "Pb-O": ["PbO / PbO₂", "Lead oxides", "Multiple compounds", "Solid"], "Au-Cl": ["AuCl₃", "Gold(III) chloride", "Compound", "Solid"], "H-C-O": ["H₂CO₃", "Carbonic acid", "Aqueous/unstable", "Aqueous"], "H-S-O": ["H₂SO₄", "Sulfuric acid", "Molecular/aqueous acid", "Liquid"], "H-P-O": ["H₃PO₄", "Phosphoric acid", "Molecular/aqueous acid", "Liquid"], "Na-C-O": ["Na₂CO₃", "Sodium carbonate", "Ionic compound", "Solid"], "Na-H-C-O": ["NaHCO₃", "Sodium bicarbonate", "Ionic compound", "Solid"], "Na-N-O": ["NaNO₃", "Sodium nitrate", "Ionic compound", "Solid"], "Na-S-O": ["Na₂SO₄", "Sodium sulfate", "Ionic compound", "Solid"], "Na-P-O": ["Na₃PO₄", "Sodium phosphate", "Ionic compound", "Solid"], "K-C-O": ["K₂CO₃", "Potassium carbonate", "Ionic compound", "Solid"], "K-N-O": ["KNO₃", "Potassium nitrate", "Ionic compound", "Solid"], "K-S-O": ["K₂SO₄", "Potassium sulfate", "Ionic compound", "Solid"], "K-P-O": ["K₃PO₄", "Potassium phosphate", "Ionic compound", "Solid"], "Ca-C-O": ["CaCO₃", "Calcium carbonate", "Ionic compound", "Solid"], "Ca-H-O": ["Ca(OH)₂", "Calcium hydroxide", "Ionic compound", "Solid"], "Ca-N-O": ["Ca(NO₃)₂", "Calcium nitrate", "Ionic compound", "Solid"], "Ca-S-O": ["CaSO₄", "Calcium sulfate", "Ionic compound", "Solid"], "Ca-P-O": ["Ca₃(PO₄)₂", "Calcium phosphate", "Ionic compound", "Solid"], "Mg-C-O": ["MgCO₃", "Magnesium carbonate", "Ionic compound", "Solid"], "Mg-H-O": ["Mg(OH)₂", "Magnesium hydroxide", "Ionic compound", "Solid"], "Mg-N-O": ["Mg(NO₃)₂", "Magnesium nitrate", "Ionic compound", "Solid"], "Mg-S-O": ["MgSO₄", "Magnesium sulfate", "Ionic compound", "Solid"], "Mg-P-O": ["Mg₃(PO₄)₂", "Magnesium phosphate", "Ionic compound", "Solid"], "Al-H-O": ["Al(OH)₃", "Aluminium hydroxide", "Ionic compound", "Solid"], "Al-N-O": ["Al(NO₃)₃", "Aluminium nitrate", "Ionic compound", "Solid"], "Al-S-O": ["Al₂(SO₄)₃", "Aluminium sulfate", "Ionic compound", "Solid"], "Al-P-O": ["AlPO₄", "Aluminium phosphate", "Ionic compound", "Solid"], "Si-O-Na": ["Na₂SiO₃", "Sodium silicate", "Ionic compound", "Solid"], "Si-O-Ca": ["CaSiO₃", "Calcium silicate", "Mineral/ionic solid", "Solid"], "Si-O-Mg": ["MgSiO₃", "Magnesium silicate", "Mineral", "Solid"], "Si-O-Al": ["Al₂SiO₅", "Aluminium silicate", "Mineral", "Solid"]};
+
+// EXACT element-set outcomes.
+// Each listed compound contains every element type in its key.
+// Multiple compounds are allowed because the same set of elements can make
+// different real substances with different ratios/structures.
+const exactOutcomes = Object.fromEntries(
+  Object.entries(compounds).map(([k,v]) => [k,[v]])
+);
+
+Object.assign(exactOutcomes, {
+  "H-O":[
+    ["H₂O","Water","Molecular compound","Liquid"],
+    ["H₂O₂","Hydrogen peroxide","Molecular compound","Liquid"]
+  ],
+  "H-C":[
+    ["CH₄","Methane","Molecular compound","Gas"],
+    ["C₂H₆","Ethane","Molecular compound","Gas"],
+    ["C₂H₄","Ethene","Molecular compound","Gas"],
+    ["C₂H₂","Ethyne (acetylene)","Molecular compound","Gas"]
+  ],
+  "H-N":[
+    ["NH₃","Ammonia","Molecular compound","Gas"],
+    ["N₂H₄","Hydrazine","Molecular compound","Liquid"]
+  ],
+  "C-O":[
+    ["CO","Carbon monoxide","Molecular compound","Gas"],
+    ["CO₂","Carbon dioxide","Molecular compound","Gas"]
+  ],
+  "C-N":[
+    ["C₂N₂","Cyanogen","Molecular compound","Gas"]
+  ],
+  "N-O":[
+    ["NO","Nitric oxide","Molecular compound","Gas"],
+    ["NO₂","Nitrogen dioxide","Molecular compound","Gas"],
+    ["N₂O","Dinitrogen monoxide (nitrous oxide)","Molecular compound","Gas"],
+    ["N₂O₃","Dinitrogen trioxide","Molecular compound","Gas/liquid"],
+    ["N₂O₅","Dinitrogen pentoxide","Molecular compound","Solid"]
+  ],
+  "H-C-O":[
+    ["H₂CO₃","Carbonic acid","Aqueous/unstable","Aqueous"],
+    ["CH₂O","Methanal (formaldehyde)","Molecular compound","Gas/aqueous"],
+    ["CH₄O","Methanol","Molecular compound","Liquid"],
+    ["C₂H₆O","Ethanol","Molecular compound","Liquid"],
+    ["C₆H₁₂O₆","Glucose","Organic compound","Solid/aqueous"]
+  ],
+  "H-C-N":[
+    ["HCN","Hydrogen cyanide","Molecular compound","Gas/aqueous"],
+    ["CH₅N","Methylamine","Molecular compound","Gas"],
+    ["C₂H₃N","Acetonitrile","Molecular compound","Liquid"]
+  ],
+  "H-C-N-O":[
+    ["CH₄N₂O","Urea","Organic compound","Solid"],
+    ["C₂H₅NO₂","Glycine","Amino acid","Solid"],
+    ["C₃H₇NO₂","Alanine","Amino acid","Solid"],
+    ["C₃H₇NO₃","Serine","Amino acid","Solid"],
+    ["C₄H₉NO₂","Valine","Amino acid","Solid"],
+    ["C₅H₁₁NO₂","Leucine","Amino acid","Solid"],
+    ["C₆H₁₃NO₂","Lysine","Amino acid","Solid"],
+    ["C₅H₉NO₄","Glutamic acid","Amino acid","Solid"],
+    ["C₄H₈N₂O₃","Asparagine","Amino acid","Solid"],
+    ["C₅H₁₀N₂O₃","Glutamine","Amino acid","Solid"],
+    ["C₅H₄N₄O₃","Uric acid","Organic compound","Solid"],
+    ["C₈H₁₀N₄O₂","Caffeine","Organic compound","Solid"]
+  ],
+  "H-C-Cl":[
+    ["CH₃Cl","Chloromethane","Molecular compound","Gas"],
+    ["CH₂Cl₂","Dichloromethane","Molecular compound","Liquid"],
+    ["CHCl₃","Chloroform","Molecular compound","Liquid"]
+  ],
+  "H-C-S":[
+    ["CH₄S","Methanethiol","Molecular compound","Gas/liquid"],
+    ["C₂H₆S","Ethanethiol","Molecular compound","Liquid"]
+  ],
+  "H-N-O":[
+    ["NH₂OH","Hydroxylamine","Molecular compound","Solid/aqueous"],
+    ["HNO₂","Nitrous acid","Aqueous acid","Aqueous"],
+    ["HNO₃","Nitric acid","Aqueous acid","Liquid/aqueous"]
+  ],
+  "H-P-O":[
+    ["H₃PO₄","Phosphoric acid","Molecular/aqueous acid","Liquid/aqueous"],
+    ["H₃PO₃","Phosphorous acid","Molecular/aqueous acid","Aqueous"]
+  ],
+  "H-S-O":[
+    ["H₂SO₃","Sulfurous acid","Aqueous acid","Aqueous"],
+    ["H₂SO₄","Sulfuric acid","Aqueous acid","Liquid/aqueous"]
+  ],
+  "C-H-O-S":[
+    ["C₂H₆OS","Dimethyl sulfoxide","Organic compound","Liquid"]
+  ],
+  "Ca-C-O":[
+    ["CaCO₃","Calcium carbonate","Ionic compound","Solid"]
+  ],
+  "Ca-H-O":[
+    ["Ca(OH)₂","Calcium hydroxide","Ionic compound","Solid"]
+  ],
+  "Na-H-C-O":[
+    ["NaHCO₃","Sodium bicarbonate","Ionic compound","Solid"]
+  ]
+});
+
+const E=Object.fromEntries(elements.map(x=>[x[0],x]));
+const metals=new Set(["Li","Be","Na","Mg","Al","K","Ca","Sc","Ti","V","Cr","Mn","Fe","Co","Ni","Cu","Zn","Ga","Rb","Sr","Y","Zr","Nb","Mo","Tc","Ru","Rh","Pd","Ag","Cd","In","Sn","Cs","Ba","La","Ce","Pr","Nd","Pm","Sm","Eu","Gd","Tb","Dy","Ho","Er","Tm","Yb","Lu","Hf","Ta","W","Re","Os","Ir","Pt","Au","Hg","Tl","Pb","Bi","Po","Fr","Ra","Ac","Th","Pa","U","Np","Pu","Am","Cm","Bk","Cf","Es","Fm","Md","No","Lr","Rf","Db","Sg","Bh","Hs","Mt","Ds","Rg","Cn","Nh","Fl","Mc","Lv"]);
+const charges={H:[1],Li:[1],Be:[2],B:[3],C:[4],N:[-3,3,5],O:[-2],F:[-1],Na:[1],Mg:[2],Al:[3],Si:[4],P:[-3,3,5],S:[-2,4,6],Cl:[-1],K:[1],Ca:[2],Sc:[3],Ti:[2,3,4],V:[2,3,4,5],Cr:[2,3,6],Mn:[2,3,4,6,7],Fe:[2,3],Co:[2,3],Ni:[2,3],Cu:[1,2],Zn:[2],Ga:[3],Ge:[2,4],As:[-3,3,5],Se:[-2,4,6],Br:[-1],Rb:[1],Sr:[2],Y:[3],Zr:[4],Nb:[3,5],Mo:[4,6],Tc:[4,7],Ru:[3,4],Rh:[3],Pd:[2,4],Ag:[1],Cd:[2],In:[1,3],Sn:[2,4],Sb:[-3,3,5],Te:[-2,4,6],I:[-1,1,5,7],Cs:[1],Ba:[2],La:[3],Ce:[3,4],Pr:[3,4],Nd:[3],Pm:[3],Sm:[2,3],Eu:[2,3],Gd:[3],Tb:[3,4],Dy:[3],Ho:[3],Er:[3],Tm:[3],Yb:[2,3],Lu:[3],Hf:[4],Ta:[5],W:[4,6],Re:[4,6,7],Os:[3,4,8],Ir:[3,4],Pt:[2,4],Au:[1,3],Hg:[1,2],Tl:[1,3],Pb:[2,4],Bi:[3,5],Po:[2,4,6],At:[-1,1,5,7],Fr:[1],Ra:[2],Ac:[3],Th:[4],Pa:[4,5],U:[4,6],Np:[3,4,5,6],Pu:[3,4,5,6],Am:[3,4,5,6],Cm:[3,4],Bk:[3,4],Cf:[3],Es:[3],Fm:[3],Md:[2,3],No:[2,3],Lr:[3],Rf:[4],Db:[5],Sg:[6],Bh:[7],Hs:[8],Mt:[3],Ds:[2,4],Rg:[1,3],Cn:[2],Nh:[1,3],Fl:[2,4],Mc:[1,3],Lv:[2,4],Ts:[-1,1,3,5],Xe:[0],Rn:[0],Og:[0]};
+let selected=[];let discoveries=JSON.parse(localStorage.getItem("chemlabdisc")||"{}");
+function key(a){return [...a].sort((x,y)=>E[x][2]-E[y][2]).join("-")}
+function render(q=""){
+  const box=document.getElementById("elements");
+  const low=String(q).trim().toLowerCase();
+  box.innerHTML="";
+  const matches=elements.filter(x=>!low||x[0].toLowerCase().includes(low)||x[1].toLowerCase().includes(low)||String(x[2])===low);
+  if(!matches.length){
+    box.innerHTML='<div style="grid-column:1/-1;padding:24px;text-align:center;color:#9bb1c5">🔎 No element found for "<b>'+escapeHTML(q.trim())+'</b>"</div>';
+  }else{
+    matches.forEach(([sym,name,num])=>{
+      const b=document.createElement("button");
+      b.className="el"+(selected.includes(sym)?" sel":"");
+      b.innerHTML='<span class="num">'+num+'</span><div class="sym">'+sym+'</div><div class="ename">'+name+'</div>';
+      b.onclick=()=>toggle(sym);
+      box.appendChild(b);
+    });
+  }
+  updateSelected();
+}
+function escapeHTML(s){
+  return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function toggle(s){if(selected.includes(s))selected=selected.filter(x=>x!==s);else if(selected.length<5)selected.push(s);else return show("Maximum 5 elements","You can select at most five elements.","⚠️");render(document.getElementById("search").value)}
+function updateSelected(){document.getElementById("selCount").textContent=selected.length;document.getElementById("stage").textContent=Math.max(1,selected.length);document.getElementById("selectedInfo").innerHTML=selected.length?selected.map(s=>'<div><b>'+s+'</b> — '+E[s][1]+' <span class="small">(#'+E[s][2]+')</span></div>').join(""):"Nothing selected."}
+function show(title,meta,formula="⚛️",badge=""){document.getElementById("result").innerHTML='<div class="chips">'+selected.map(s=>'<span class="chip">'+s+'</span>').join(" + ")+'</div><div class="formula">'+formula+'</div><h2>'+title+'</h2><div class="meta">'+meta+'</div>'+(badge?'<div class="badge">'+badge+'</div>':"")}
+function sub(n){return n===1?"":n}
+function gcd(a,b){while(b){let t=a%b;a=b;b=t}return a}
+function properBinaryName(metal, non, metalCharge){
+  const fixed={
+    "Fe-O-2":"iron(II) oxide","Fe-O-3":"iron(III) oxide",
+    "Cu-O-1":"copper(I) oxide","Cu-O-2":"copper(II) oxide",
+    "Sn-O-2":"tin(II) oxide","Sn-O-4":"tin(IV) oxide",
+    "Pb-O-2":"lead(II) oxide","Pb-O-4":"lead(IV) oxide",
+    "Hg-O-1":"mercury(I) oxide","Hg-O-2":"mercury(II) oxide",
+    "Co-O-2":"cobalt(II) oxide","Co-O-3":"cobalt(III) oxide",
+    "Ni-O-2":"nickel(II) oxide","Ni-O-3":"nickel(III) oxide",
+    "Mn-O-2":"manganese(II) oxide","Mn-O-3":"manganese(III) oxide",
+    "Cr-O-2":"chromium(II) oxide","Cr-O-3":"chromium(III) oxide",
+    "Au-O-1":"gold(I) oxide","Au-O-3":"gold(III) oxide",
+    "Fe-Cl-2":"iron(II) chloride","Fe-Cl-3":"iron(III) chloride",
+    "Cu-Cl-1":"copper(I) chloride","Cu-Cl-2":"copper(II) chloride",
+    "Sn-Cl-2":"tin(II) chloride","Sn-Cl-4":"tin(IV) chloride",
+    "Pb-Cl-2":"lead(II) chloride","Pb-Cl-4":"lead(IV) chloride",
+    "Au-Cl-1":"gold(I) chloride","Au-Cl-3":"gold(III) chloride",
+    "Fe-S-2":"iron(II) sulfide","Fe-S-3":"iron(III) sulfide",
+    "Cu-S-1":"copper(I) sulfide","Cu-S-2":"copper(II) sulfide"
+  };
+  const exact=fixed[metal+"-"+non+"-"+metalCharge];
+  if(exact) return exact;
+  const anionNames={
+    F:"fluoride",Cl:"chloride",Br:"bromide",I:"iodide",
+    O:"oxide",S:"sulfide",N:"nitride",P:"phosphide",
+    H:"hydride",C:"carbide",Si:"silicide",B:"boride"
+  };
+  const base=E[metal][1].toLowerCase();
+  const an=anionNames[non]||E[non][1].toLowerCase();
+  const variable=(charges[metal]||[]).length>1;
+  return base+(variable?"("+["zero","I","II","III","IV","V","VI","VII","VIII"][metalCharge]+")":"")+" "+an;
+}
+
+function explainNoSimpleCombination(parts){
+  const noble=new Set(["He","Ne","Ar","Kr","Xe","Rn","Og"]);
+  const names=parts.map(s=>E[s][1]).join(" + ");
+  if(parts.some(s=>noble.has(s))){
+    const n=parts.filter(s=>noble.has(s)).map(s=>E[s][1]).join(", ");
+    return "<b>Why no ordinary compound?</b> "+n+" is a noble gas with a very stable, filled outer electron shell. Under ordinary conditions it is extremely unreactive, so "+names+" does not have a common simple compound.";
+  }
+  if(parts.every(s=>metals.has(s))){
+    return "<b>Why no single formula?</b> These are metals. Metal–metal systems can form alloys or intermetallic phases, but there is usually no single simple ionic formula that can be determined just by adding the element symbols.";
+  }
+  const nonmetals=parts.filter(s=>!metals.has(s));
+  if(nonmetals.length===parts.length){
+    return "<b>Why no simple result?</b> These are nonmetals. Their compounds depend strongly on bonding, molecular structure, stoichiometric ratio and reaction conditions, so the game does not invent one formula without a known compound.";
+  }
+  return "<b>Why no exact result?</b> A chemical reaction is not simply a mathematical addition of element symbols. A real compound needs a stable structure and a valid stoichiometric ratio; temperature, pressure, solvent, oxidation state and reaction conditions can also matter.";
+}
+
+function predictBinary(a,b){
+  const noble=new Set(["He","Ne","Ar","Kr","Xe","Rn","Og"]);
+  if(noble.has(a)||noble.has(b)) return null;
+  if(metals.has(a)&&metals.has(b)) return null;
+  if(!(charges[a]||[]).length||!(charges[b]||[]).length) return null;
+
+  let metal=metals.has(a)?a:b, non=metal===a?b:a;
+  if(!metals.has(metal)) return null;
+
+  const possible=(charges[metal]||[]).filter(x=>x>0);
+  const nc=(charges[non]||[]).find(x=>x<0);
+  if(!possible.length || nc===undefined) return null;
+
+  const mc=possible[0], g=gcd(Math.abs(mc),Math.abs(nc));
+  const am=Math.abs(nc)/g, an=mc/g;
+  const formula=metal+sub(am)+non+sub(an);
+  const name=properBinaryName(metal,non,mc);
+
+  return {
+    formula,name,
+    type:"Rule-based ionic prediction",
+    state:"Usually solid",
+    note:"This formula is a common-charge prediction, not a claim that it is the only possible compound."
+  };
+}
+function analyze(){
+  if(!selected.length){
+    return show("Choose elements","Pick at least one element.","⚛️");
+  }
+
+  if(selected.length===1){
+    const e=E[selected[0]];
+    return show(
+      e[1],
+      "Atomic number: <b>"+e[2]+"</b><br>Symbol: <b>"+e[0]+"</b><br>This is an element, not a compound.",
+      "⚛️","ELEMENT DISCOVERED"
+    );
+  }
+
+  const k=key(selected);
+
+  // FIRST: exact database outcomes. No subset results.
+  if(exactOutcomes[k]){
+    const outcomes=exactOutcomes[k];
+
+    outcomes.forEach(d=>{
+      discoveries[k+"|"+d[0]]=d;
+    });
+    save();
+
+    const cards=outcomes.map(d =>
+      '<div class="card" style="text-align:left;width:100%;max-width:850px">'+
+      '<b style="color:#58e7ff;font-size:20px">'+d[0]+'</b> — '+d[1]+
+      '<br><span class="small">'+d[2]+' • '+d[3]+'</span></div>'
+    ).join("");
+
+    return show(
+      "Exact element-set outcomes",
+      "<b>These are real compounds containing EVERY selected element type.</b>"+
+      "<br><span class='small'>There can be multiple outcomes because elements can form different compounds with different ratios and structures.</span>"+
+      '<div style="text-align:left;width:100%;margin-top:12px">'+cards+"</div>",
+      "🧪","EXACT MATCH — REAL COMPOUNDS"
+    );
+  }
+
+  // SECOND: only for binary combinations, make a cautious common-charge prediction.
+  if(selected.length===2){
+    const p=predictBinary(selected[0],selected[1]);
+
+    if(p){
+      discoveries[k]=[p.formula,p.name,p.type,p.state];
+      save();
+
+      return show(
+        p.name,
+        "<b>Formula:</b> "+p.formula+
+        "<br><b>Type:</b> "+p.type+
+        "<br><b>State:</b> "+p.state+
+        "<br><span class='small'>"+p.note+
+        " If the element has multiple oxidation states, other real compounds may also exist.</span>",
+        p.formula,"🧠 PREDICTED — REAL CHEMICAL NAME"
+      );
+    }
+
+    if(metals.has(selected[0])&&metals.has(selected[1])){
+      return show(
+        "No single simple formula",
+        "<b>Why?</b> Both selected elements are metals. They may form alloys or intermetallic phases, but there is not necessarily one simple ionic formula that can be determined just by adding their symbols.",
+        "⚙️","METAL + METAL"
+      );
+    }
+  }
+
+  // IMPORTANT: Never show a compound made from only a subset of the selection.
+  return show(
+    "No exact outcome in the current database",
+    explainNoSimpleCombination(selected)+
+    "<br><br><span class='small'><b>Exact-match rule:</b> the game will not show NaHCO₃ when you selected Na + H + C + O unless the result contains all four selected element types. It will also not show H₂CO₃ for that selection because it is missing Na.</span>",
+    "⚗️","NO SUBSET RESULTS"
+  );
+}
+
+function save(){localStorage.setItem("chemlabdisc",JSON.stringify(discoveries));renderList();document.getElementById("disc").textContent=Object.keys(discoveries).length}
+function renderList(){let l=document.getElementById("list"),ks=Object.keys(discoveries);l.innerHTML=ks.length?ks.slice().reverse().map(k=>{let d=discoveries[k];return '<div class="card"><b>'+(d[0]||d.formula)+'</b> — '+(d[1]||d.name)+'<br><span class="small">'+k.replaceAll("-"," + ")+'</span></div>'}).join(""):'<div class="small">No discoveries yet.</div>'}
+function reset(msg){selected=[];render(document.getElementById("search").value);show(msg||"New experiment","Choose your first element and build a new combination.","✨")}
+document.getElementById("combine").onclick=analyze;document.getElementById("clear").onclick=()=>reset("Selection cleared");document.getElementById("new").onclick=()=>reset("New experiment");document.getElementById("search").oninput=e=>render(e.target.value);
+render();renderList();document.getElementById("disc").textContent=Object.keys(discoveries).length;
+
+// ---------- Encyclopedia + Discovery History ----------
+let currentInfo=null;
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function showMode(mode){
+  document.getElementById("elementsView").style.display=mode==="elements"?"block":"none";
+  document.getElementById("historyView").style.display=mode==="history"?"block":"none";
+  document.querySelector(".wrap").style.display=mode==="forge"?"grid":"none";
+  document.querySelectorAll(".mode").forEach(x=>x.classList.remove("active"));
+  document.getElementById(mode==="forge"?"forgeMode":mode==="elements"?"elementsMode":"historyMode").classList.add("active");
+  if(mode==="elements") renderDirectory(document.getElementById("elementSearch").value);
+  if(mode==="history") renderHistory();
+}
+function renderDirectory(q=""){
+  const box=document.getElementById("directory"), low=String(q).trim().toLowerCase();
+  const matches=elementInfo.filter(e=>!low||e.s.toLowerCase().includes(low)||e.n.toLowerCase().includes(low)||String(e.z)===low);
+  box.innerHTML=matches.length?matches.map(e=>'<button class="el" data-s="'+e.s+'"><span class="num">'+e.z+'</span><div class="sym">'+e.s+'</div><div class="ename">'+e.n+'</div></button>').join(""):'<div class="empty" style="grid-column:1/-1">🔎 No element found.</div>';
+  box.querySelectorAll(".el").forEach(b=>b.onclick=()=>showElement(b.dataset.s));
+}
+function showElement(sym){
+  const e=elementInfo.find(x=>x.s===sym); if(!e)return; currentInfo=e;
+  const radioactive=["Po","At","Rn","Fr","Ra","Ac","Th","Pa","U","Np","Pu","Am","Cm","Bk","Cf","Es","Fm","Md","No","Lr","Tc","Pm","Bi"].includes(e.s);
+  document.getElementById("elementDetail").innerHTML=
+  '<div class="infoCard"><div class="bigSymbol">'+e.s+'</div><h2>'+e.n+'</h2>'+
+  '<span class="pill">#'+e.z+'</span><span class="pill">'+e.cat+'</span><span class="pill">'+e.state+'</span>'+
+  '<p class="small">'+esc(e.common)+'</p></div>'+
+  '<div class="infoCard"><h2>⚛️ Key properties</h2>'+
+  '<div class="propertyGrid">'+
+  '<div class="prop"><b>Atomic number</b>'+e.z+'</div>'+
+  '<div class="prop"><b>Relative atomic mass</b>'+e.mass+'</div>'+
+  '<div class="prop"><b>Category</b>'+e.cat+'</div>'+
+  '<div class="prop"><b>State at room conditions</b>'+e.state+'</div>'+
+  '<div class="prop"><b>Period</b>'+e.period+'</div>'+
+  '<div class="prop"><b>Block</b>'+e.block+'</div>'+
+  '<div class="prop"><b>Chemical behavior</b>'+esc(e.key)+'</div>'+
+  '<div class="prop"><b>Radioactivity</b>'+(radioactive?"Radioactive / unstable isotopes":"No naturally dominant radioactive behavior")+'</div>'+
+  '</div><h2 style="margin-top:16px">🧰 Uses</h2><p class="meta">'+esc(e.uses)+'</p>'+
+  '<h2 style="margin-top:16px">🕰️ Discovery history</h2><p class="meta">'+esc(e.history)+'</p></div>';
+}
+function renderHistory(){
+  const list=document.getElementById("historyList"), keys=Object.keys(discoveries);
+  document.getElementById("historyCount").textContent=keys.length;
+  if(!keys.length){list.innerHTML='<div class="empty">🧪 No discoveries saved yet.<br>Analyze an exact combination in Chemistry Forge to create your first discovery.</div>';return;}
+  list.innerHTML=keys.slice().reverse().map((k,i)=>{
+    const d=discoveries[k], label=k.split("|")[0];
+    const formula=d[0]||"", name=d[1]||"Unknown";
+    return '<label class="historyItem"><input type="checkbox" class="historyCheck" data-key="'+esc(k)+'"><div><b>'+esc(formula)+'</b> — '+esc(name)+'<br><span class="small">'+esc(label.replaceAll("-"," + "))+' • '+esc(d[2]||"")+' • '+esc(d[3]||"")+'</span></div></label>';
+  }).join("");
+}
+function selectedHistoryKeys(){return [...document.querySelectorAll(".historyCheck:checked")].map(x=>x.dataset.key);}
+document.getElementById("elementSearch").oninput=e=>renderDirectory(e.target.value);
+document.getElementById("selectAllHistory").onclick=()=>document.querySelectorAll(".historyCheck").forEach(x=>x.checked=true);
+document.getElementById("selectNoneHistory").onclick=()=>document.querySelectorAll(".historyCheck").forEach(x=>x.checked=false);
+document.getElementById("deleteHistory").onclick=()=>{
+  const keys=selectedHistoryKeys();
+  if(!keys.length){alert("Select at least one discovery first.");return;}
+  const ok=confirm("Delete "+keys.length+" selected discovery/discoveries?\\n\\nChoose OK for YES or Cancel for NO.");
+  if(ok){keys.forEach(k=>delete discoveries[k]);save();renderHistory();}
+};
+renderDirectory();
+renderHistory();
+
+/* =========================================================
+   CHEMLAB COMPLETE PROJECT EXTENSION
+   - robust saving/loading
+   - fixed discovery deletion
+   - levels + unique achievements
+   - challenges + quiz
+   - mystery compound mode
+   - applications
+   - scientist gallery
+   - My Laboratory
+   ========================================================= */
+
+const CL_KEY="chemlabCompleteSaveV1";
+const CL_DISC_KEY="chemlabdisc";
+const clDefault={
+  xp:0, quizBest:0, challengeDone:[], mysterySolved:0,
+  labName:"My ChemLab", lastSaved:null
+};
+let clState=Object.assign({},clDefault,JSON.parse(localStorage.getItem(CL_KEY)||"{}"));
+
+function clSave(){
+  clState.lastSaved=new Date().toISOString();
+  localStorage.setItem(CL_KEY,JSON.stringify(clState));
+  try{ updateStats(); }catch(e){}
+  updateDashboard();
+  renderAchievements();
+  renderChallengeBoard();
+  renderLab();
+}
+
+function toast(message){
+  const old=document.querySelector(".toast"); if(old) old.remove();
+  const t=document.createElement("div"); t.className="toast"; t.textContent=message;
+  document.body.appendChild(t); setTimeout(()=>t.remove(),2200);
+}
+
+/* Robust history deletion: delete by exact key, then rewrite storage and UI. */
+function robustDeleteHistory(){
+  const checks=[...document.querySelectorAll(".historyCheck:checked")];
+  const keys=checks.map(c=>c.getAttribute("data-key")).filter(Boolean);
+  if(!keys.length){ toast("Select at least one discovery first."); return; }
+  const ok=window.confirm(`Delete ${keys.length} selected discovery/discoveries?\n\nThis cannot be undone.`);
+  if(!ok)return;
+  let removed=0;
+  keys.forEach(k=>{
+    if(Object.prototype.hasOwnProperty.call(discoveries,k)){
+      delete discoveries[k]; removed++;
+    }
+  });
+  localStorage.setItem(CL_DISC_KEY,JSON.stringify(discoveries));
+  if(typeof renderList==="function")renderList();
+  renderHistory();
+  const count=document.getElementById("disc"); if(count)count.textContent=Object.keys(discoveries).length;
+  const hc=document.getElementById("historyCount"); if(hc)hc.textContent=Object.keys(discoveries).length;
+  toast(`Deleted ${removed} discovery${removed===1?"":"ies"}.`);
+}
+/* Override the original handler with the fixed handler. */
+const deleteBtn=document.getElementById("deleteHistory");
+if(deleteBtn)deleteBtn.onclick=robustDeleteHistory;
+
+/* Expanded view system */
+const clViews=["home","forge","elements","compounds","challenges","mystery","applications","scientists","lab","history","searchsetup","profile","players","skilltree","speedrun","themes","account","admin"];
+function clShow(view){
+  clViews.forEach(v=>{
+    const id=v==="forge"?null:v+"View";
+    if(id){const el=document.getElementById(id);if(el)el.style.display=(v===view?"block":"none");}
+  });
+  const forge=document.querySelector("main.wrap"); if(forge)forge.style.display=view==="forge"?"grid":"none";
+  const ev=document.getElementById("elementsView"); if(ev&&view==="elements")ev.style.display="block";
+  const hv=document.getElementById("historyView"); if(hv&&view==="history")hv.style.display="block";
+  document.querySelectorAll(".feature").forEach(b=>b.classList.toggle("active",b.dataset.view===view));
+  if(view==="elements")renderDirectory(document.getElementById("elementSearch").value);
+  if(view==="history")renderHistory();
+  if(view==="compounds")renderCompoundDirectory();
+  if(view==="challenges"){renderChallengeBoard();startQuizGame();}
+  if(view==="mystery")newMysteryCase();
+  if(view==="applications")renderApplications();
+  if(view==="scientists")renderScientists();
+  if(view==="lab")renderLab();
+  if(view==="home")updateDashboard();
+  if(view==="admin")refreshAdminDashboard();
+  if(view==="profile")renderProfile();
+  if(view==="players")renderPlayerDirectory();
+  if(view==="skilltree")renderSkillTree();
+  if(view==="speedrun")renderSpeedrunHome();
+  if(view==="themes")renderThemes();
+  if(view==="account")renderAccount();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+document.querySelectorAll(".feature").forEach(b=>b.addEventListener("click",()=>clShow(b.dataset.view)));
+document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>clShow(b.dataset.go)));
+
+/* Level names */
+const levelNames=[
+ "Novice Chemist","Lab Apprentice","Formula Finder","Molecule Scout",
+ "Reaction Researcher","Compound Crafter","Chemistry Explorer","Lab Specialist",
+ "Molecular Analyst","Master Chemist","ChemLab Legend"
+];
+function currentLevel(){return Math.floor(clState.xp/100)+1}
+function currentLevelName(){return levelNames[Math.min(currentLevel()-1,levelNames.length-1)]}
+
+/* Unique achievements */
+const CL_ACHIEVEMENTS=[
+ ["🧪","First Spark","Make your first saved discovery.",()=>Object.keys(discoveries).length>=1],
+ ["🔬","Element Scout","Explore the Element Encyclopedia.",()=>localStorage.getItem("clElementVisited")==="1"],
+ ["⚗️","Formula Forger","Save 5 discoveries.",()=>Object.keys(discoveries).length>=5],
+ ["🧠","Quiz Cadet","Score at least 60% on a quiz.",()=>clState.quizBest>=60],
+ ["🎯","Challenge Hunter","Complete 3 challenges.",()=>clState.challengeDone.length>=3],
+ ["🔍","Mystery Solver","Solve your first mystery case.",()=>clState.mysterySolved>=1],
+ ["🌍","Science Connector","Read the real-world applications.",()=>localStorage.getItem("clAppsVisited")==="1"],
+ ["👨‍🔬","Scientist Historian","Open the Scientist Gallery.",()=>localStorage.getItem("clScientistsVisited")==="1"],
+ ["💾","Backup Engineer","Export a ChemLab save.",()=>localStorage.getItem("clExported")==="1"],
+ ["🏆","Century Club","Reach 100 XP.",()=>clState.xp>=100],
+ ["🚀","Research Veteran","Reach 500 XP.",()=>clState.xp>=500],
+ ["👑","ChemLab Legend","Reach level 10.",()=>currentLevel()>=10]
+];
+
+function renderAchievements(){
+ const grid=document.getElementById("achievementGrid"); if(!grid)return;
+ grid.innerHTML=CL_ACHIEVEMENTS.map(a=>{
+  const u=!!a[3]();
+  return `<div class="achievement ${u?"unlocked":""}"><div class="icon">${a[0]}</div><h3>${a[1]}</h3><div class="small">${a[2]}</div><div style="margin-top:8px;font-weight:900">${u?"✓ UNLOCKED":"🔒 LOCKED"}</div></div>`;
+ }).join("");
+}
+
+/* Compound encyclopedia */
+function renderCompoundDirectory(q=""){
+ const box=document.getElementById("compoundDirectory"), count=document.getElementById("compoundCount"); if(!box)return;
+ const query=(q||document.getElementById("compoundSearch")?.value||"").toLowerCase().trim();
+ const rows=[];
+ Object.entries(compounds).forEach(([key,d])=>{
+   rows.push({key,d});
+ });
+ // Include exact multi-element outcomes, including multiple outcomes per set.
+ Object.entries(exactOutcomes||{}).forEach(([key,arr])=>{
+   arr.forEach(d=>rows.push({key,d}));
+ });
+ const seen=new Set();
+ const filtered=rows.filter(x=>{
+   const text=(x.key+" "+x.d.join(" ")).toLowerCase();
+   const unique=x.key+"|"+x.d[0]+"|"+x.d[1];
+   if(seen.has(unique))return false; seen.add(unique);
+   return !query||text.includes(query);
+ });
+ count.textContent=filtered.length+" compounds";
+ box.innerHTML=filtered.map(x=>`<div class="featureCard appCard">
+   <span class="appTag">${x.d[2]||"Compound"}</span>
+   <div class="formula">${x.d[0]}</div>
+   <h3>${x.d[1]}</h3>
+   <div class="small">${x.key.replaceAll("-"," + ")} • ${x.d[3]||"Condition dependent"}</div>
+ </div>`).join("") || `<div class="empty" style="grid-column:1/-1">No compound found.</div>`;
+}
+document.getElementById("compoundSearch")?.addEventListener("input",e=>renderCompoundDirectory(e.target.value));
+
+/* Challenges */
+const challenges=[
+ ["c1","Element Explorer","Open the Element Encyclopedia once.",10,()=>localStorage.getItem("clElementVisited")==="1"],
+ ["c2","First Formula","Save one discovery in History.",15,()=>Object.keys(discoveries).length>=1],
+ ["c3","Five Experiments","Save five discoveries.",25,()=>Object.keys(discoveries).length>=5],
+ ["c4","Quiz Thinker","Score 75% or higher on a quiz.",25,()=>clState.quizBest>=75],
+ ["c5","Mystery Detective","Solve a mystery compound.",30,()=>clState.mysterySolved>=1],
+ ["c6","Science Traveler","Open Real-World Applications.",10,()=>localStorage.getItem("clAppsVisited")==="1"],
+ ["c7","Historian","Open the Scientist Gallery.",10,()=>localStorage.getItem("clScientistsVisited")==="1"]
+];
+function syncChallenges(){
+ challenges.forEach(c=>{
+  if(c[4]() && !clState.challengeDone.includes(c[0])){
+    clState.challengeDone.push(c[0]); clState.xp+=c[3];
+    toast(`Challenge complete: ${c[1]} +${c[3]} XP`);
+  }
+ });
+}
+function renderChallengeBoard(){
+ syncChallenges();
+ const box=document.getElementById("challengeList"); if(!box)return;
+ box.innerHTML=challenges.map(c=>{
+   const done=clState.challengeDone.includes(c[0]);
+   return `<div class="featureCard challenge ${done?"done":""}">
+     <div><h3 style="margin:0">${done?"✓ ":"🎯 "}${c[1]}</h3><div class="small">${c[2]}</div></div>
+     <b class="${done?"success":""}">+${c[3]} XP</b>
+   </div>`;
+ }).join("");
+ clSaveSilent();
+}
+function clSaveSilent(){localStorage.setItem(CL_KEY,JSON.stringify(clState));updateDashboard();renderAchievements();renderLab();}
+
+/* Quiz engine */
+const clQuiz=[
+ ["Which element has atomic number 8?",["Carbon","Oxygen","Nitrogen","Fluorine"],1],
+ ["What is the formula of sodium chloride?",["NaCl","Na₂O","KCl","CaCl₂"],0],
+ ["Which gas is a noble gas?",["Oxygen","Chlorine","Neon","Hydrogen"],2],
+ ["Which element is represented by Fe?",["Fluorine","Iron","Francium","Fermium"],1],
+ ["What is CO₂ called?",["Carbon monoxide","Carbon dioxide","Calcium oxide","Cobalt oxide"],1],
+ ["Which element has symbol Au?",["Silver","Gold","Argon","Aluminium"],1],
+ ["Which is an ionic compound?",["NaCl","CO₂","CH₄","O₂"],0],
+ ["Which element is essential in ordinary water molecules?",["Oxygen","Iron","Copper","Neon"],0]
+];
+let quizIndex=0,quizScore=0,quizLocked=false;
+function startQuizGame(){
+ quizIndex=0;quizScore=0;quizLocked=false;renderQuizQuestion();
+}
+function renderQuizQuestion(){
+ const q=clQuiz[quizIndex]; if(!q)return;
+ document.getElementById("quizCounter").textContent=`Question ${quizIndex+1}/${clQuiz.length}`;
+ document.getElementById("quizQuestion").textContent=q[0];
+ document.getElementById("quizFeedback").textContent="";
+ document.getElementById("quizNext").style.display="none";
+ document.getElementById("quizOptions").innerHTML=q[1].map((o,i)=>`<button class="quizOption" data-i="${i}">${o}</button>`).join("");
+ document.querySelectorAll(".quizOption").forEach(b=>b.onclick=()=>answerQuiz(+b.dataset.i));
+}
+function answerQuiz(i){
+ if(quizLocked)return; quizLocked=true;
+ const q=clQuiz[quizIndex];
+ document.querySelectorAll(".quizOption").forEach((b,j)=>{
+   if(j===q[2])b.classList.add("correct");
+   if(j===i&&i!==q[2])b.classList.add("wrong");
+ });
+ if(i===q[2]){quizScore++;document.getElementById("quizFeedback").textContent="✓ Correct!";}else document.getElementById("quizFeedback").textContent="✗ Not quite. The highlighted answer is correct.";
+ document.getElementById("quizNext").style.display="inline-block";
+}
+document.getElementById("quizNext").onclick=()=>{
+ quizIndex++;quizLocked=false;
+ if(quizIndex<clQuiz.length)renderQuizQuestion();else finishQuiz();
+};
+function finishQuiz(){
+ const pct=Math.round(quizScore/clQuiz.length*100);
+ clState.quizBest=Math.max(clState.quizBest,pct);
+ const earned=quizScore*10;
+ clState.xp+=earned;
+ clSave();
+ document.getElementById("quizCounter").textContent="Complete";
+ document.getElementById("quizQuestion").innerHTML=`🏁 Quiz complete — ${quizScore}/${clQuiz.length} (${pct}%)`;
+ document.getElementById("quizOptions").innerHTML=`<div class="featureCard"><b>+${earned} XP</b><div class="small">Best score: ${clState.quizBest}%</div></div>`;
+ document.getElementById("quizFeedback").textContent="";
+ document.getElementById("quizNext").style.display="inline-block";
+ document.getElementById("quizNext").textContent="Play Again";
+ document.getElementById("quizNext").onclick=()=>{document.getElementById("quizNext").textContent="Next Question →";startQuizGame();};
+}
+
+/* Mystery mode */
+const mysteries=[
+ {answer:["water","h₂o","h2o"],formula:"H₂O",name:"Water",clues:["It contains hydrogen and oxygen.","Its molecular formula has two hydrogen atoms for every oxygen atom.","It is essential to life and commonly occurs as a liquid at room conditions."]},
+ {answer:["carbon dioxide","co₂","co2"],formula:"CO₂",name:"Carbon dioxide",clues:["It contains carbon and oxygen.","Its formula has one carbon atom and two oxygen atoms.","It is important in photosynthesis and the carbon cycle."]},
+ {answer:["sodium chloride","nacl"],formula:"NaCl",name:"Sodium chloride",clues:["It contains sodium and chlorine.","It is an ionic compound.","It is commonly known as table salt."]},
+ {answer:["ammonia","nh₃","nh3"],formula:"NH₃",name:"Ammonia",clues:["It contains nitrogen and hydrogen.","It is a common industrial chemical used in fertilizer production.","Its molecule has one nitrogen atom and three hydrogen atoms."]},
+ {answer:["silicon dioxide","sio₂","sio2"],formula:"SiO₂",name:"Silicon dioxide",clues:["It contains silicon and oxygen.","It forms network structures.","It is a major component of quartz and many glasses."]}
+];
+let mysteryIndex=0;
+function newMysteryCase(){
+ mysteryIndex=Math.floor(Math.random()*mysteries.length);
+ const m=mysteries[mysteryIndex];
+ document.getElementById("mysteryClues").innerHTML=m.clues.map((c,i)=>`<div class="clue"><b>Clue ${i+1}</b><br>${c}</div>`).join("");
+ document.getElementById("mysteryAnswer").value="";
+ document.getElementById("mysteryFeedback").textContent="";
+}
+document.getElementById("newMystery").onclick=newMysteryCase;
+document.getElementById("mysteryCheck").onclick=()=>{
+ const m=mysteries[mysteryIndex], a=document.getElementById("mysteryAnswer").value.trim().toLowerCase();
+ if(!a){toast("Enter an answer first.");return}
+ if(m.answer.includes(a)){
+   clState.mysterySolved++;clState.xp+=30;clSave();
+   document.getElementById("mysteryFeedback").innerHTML=`<span class="success">✓ Correct! ${m.formula} — ${m.name}. +30 XP</span>`;
+ }else{
+   document.getElementById("mysteryFeedback").innerHTML=`<span class="warning">Not yet. Re-read the clues and try again.</span>`;
+ }
+};
+
+/* Applications */
+const applications=[
+ ["⚡","Energy","Hydrogen can be used in fuel-cell systems; chemistry also helps produce and store energy materials."],
+ ["🏭","Materials","Silicon dioxide is important in glass and many mineral materials; metal oxides are widely used in ceramics and coatings."],
+ ["🌱","Agriculture","Nitrogen chemistry is central to ammonia and fertilizer production, supporting modern agriculture."],
+ ["💊","Medicine","Oxygen is used in medical oxygen systems, while chemistry enables many medicines, diagnostics and materials."],
+ ["📱","Technology","Lithium compounds and materials are important in rechargeable battery technology."],
+ ["🧊","Cooling","Helium is used for cryogenic cooling in specialized scientific and medical equipment."],
+ ["🚗","Transport","Chemistry underpins fuels, catalysts, batteries, lightweight alloys and many vehicle materials."],
+ ["💧","Water","Water chemistry is fundamental to treatment, environmental science and biological systems."]
+];
+function renderApplications(){
+ localStorage.setItem("clAppsVisited","1");
+ document.getElementById("applicationsGrid").innerHTML=applications.map(a=>`<div class="featureCard appCard"><div class="appTag">${a[0]} ${a[1]}</div><p>${a[2]}</p></div>`).join("");
+ clSaveSilent();
+}
+
+/* Scientists */
+const scientists=[
+ ["🧪","Antoine Lavoisier","Helped establish modern chemical nomenclature and emphasized careful quantitative measurement in chemistry."],
+ ["🔬","Dmitri Mendeleev","Developed an early periodic classification that helped organize the elements and predict missing ones."],
+ ["⚛️","Marie Curie","Pioneered research on radioactivity and discovered the elements polonium and radium with Pierre Curie."],
+ ["💡","Michael Faraday","Made major contributions to electrochemistry and electromagnetic science."],
+ ["🧠","John Dalton","Developed an influential atomic theory and helped explain chemical combination using atoms."],
+ ["🌟","Humphry Davy","Discovered several elements and advanced electrochemistry through experiments with electricity."],
+ ["🧬","Rosalind Franklin","Her experimental work on X-ray diffraction contributed important evidence for molecular structures, especially DNA."],
+ ["🏅","Glenn T. Seaborg","Contributed to the discovery and understanding of several transuranium elements and actinide chemistry."]
+];
+function renderScientists(){
+ localStorage.setItem("clScientistsVisited","1");
+ document.getElementById("scientistGrid").innerHTML=scientists.map(s=>`<div class="featureCard scientist"><div class="scientistAvatar">${s[0]}</div><div><h3>${s[1]}</h3><p>${s[2]}</p></div></div>`).join("");
+ clSaveSilent();
+}
+
+/* Lab */
+function renderLab(){
+ const name=document.getElementById("labName"), display=document.getElementById("labNameDisplay");
+ if(name)name.value=clState.labName||"My ChemLab";
+ if(display)display.textContent=`Current laboratory: ${clState.labName||"My ChemLab"}`;
+ const stats=document.getElementById("labStats");
+ if(stats)stats.innerHTML=`Level: <b>${currentLevel()}</b> — ${currentLevelName()}<br>XP: <b>${clState.xp}</b><br>Discoveries: <b>${Object.keys(discoveries).length}</b><br>Challenges: <b>${clState.challengeDone.length}/${challenges.length}</b><br>Mysteries solved: <b>${clState.mysterySolved}</b><br>Best quiz: <b>${clState.quizBest}%</b><br>Last save: <b>${clState.lastSaved?new Date(clState.lastSaved).toLocaleString():"Not yet"}</b>`;
+ renderAchievements();
+}
+document.getElementById("saveLabName").onclick=()=>{
+ clState.labName=document.getElementById("labName").value.trim()||"My ChemLab";clSave();toast("Lab name saved.");
+};
+document.getElementById("exportSave").onclick=()=>{
+ const payload={
+   version:1,progress:clState,discoveries:discoveries
+ };
+ const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+ const url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download="ChemLab-Save.json";a.click();URL.revokeObjectURL(url);
+ localStorage.setItem("clExported","1");toast("Save exported.");
+};
+document.getElementById("importSave").onchange=e=>{
+ const file=e.target.files[0];if(!file)return;
+ const reader=new FileReader();
+ reader.onload=()=>{
+  try{
+   const data=JSON.parse(reader.result);
+   if(data.progress)clState=Object.assign({},clDefault,data.progress);
+   if(data.discoveries&&typeof data.discoveries==="object"){
+    discoveries=data.discoveries;
+    localStorage.setItem("chemlabdisc",JSON.stringify(discoveries));
+   }
+   clSave();renderList();renderHistory();toast("Save imported successfully.");
+  }catch(err){toast("Invalid ChemLab save file.");}
+ };
+ reader.readAsText(file);
+};
+document.getElementById("resetSave").onclick=()=>{
+ if(!confirm("Reset all ChemLab progress, discoveries and achievements?"))return;
+ localStorage.removeItem(CL_KEY);localStorage.removeItem("chemlabdisc");
+ localStorage.removeItem("clElementVisited");localStorage.removeItem("clAppsVisited");localStorage.removeItem("clScientistsVisited");localStorage.removeItem("clExported");
+ clState=Object.assign({},clDefault);discoveries={};selected=[];
+ render();renderList();renderHistory();clSave();clShow("home");toast("ChemLab progress reset.");
+};
+
+/* Search setup uses a public-site warning rather than pretending local files are indexed. */
+
+/* Mark encyclopedia visit */
+const oldShowElement=showElement;
+showElement=function(sym){localStorage.setItem("clElementVisited","1");oldShowElement(sym);clSaveSilent();};
+
+// ---------- Admin Dashboard (offline demo gate) ----------
+const ADMIN_CODE_HASH="92b206fc000fd2733a9115d249f3fe840611e5ffaa51e1fd275191a561743812";
+let adminUnlocked=false;
+async function sha256(text){
+  const data=new TextEncoder().encode(text);
+  const buf=await crypto.subtle.digest("SHA-256",data);
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+function setAdminMessage(msg,bad=false){const e=document.getElementById("adminMessage");if(e){e.textContent=msg;e.style.color=bad?"#ff8c9a":"#8be8ff";}}
+function refreshAdminDashboard(){
+  const gate=document.getElementById("adminGate"), panel=document.getElementById("adminPanel");
+  if(!gate||!panel)return;
+  gate.style.display=adminUnlocked?"none":"block"; panel.style.display=adminUnlocked?"block":"none";
+  if(!adminUnlocked)return;
+  const lvl=currentLevel(), xp=clState.xp||0, disc=Object.keys(discoveries||{}).length;
+  const ach=Array.isArray(clState.achievements)?clState.achievements.length:0;
+  const user=localStorage.getItem("chemlabUsername")||localStorage.getItem("labName")||"Not set";
+  const rank=currentLevelName?currentLevelName():"Novice Chemist";
+  const vals={adminLevel:lvl,adminXP:xp,adminDiscoveries:disc,adminAchievements:ach,adminUsername:user,adminRank:rank,adminTableUser:user,adminTableLevel:lvl,adminTableXP:xp,adminTableDisc:disc,adminTableAch:ach};
+  Object.entries(vals).forEach(([id,v])=>{const e=document.getElementById(id);if(e)e.textContent=v});
+  const storageBytes=Object.keys(localStorage).reduce((n,k)=>n+k.length+(localStorage.getItem(k)||"").length,0);
+  const st=document.getElementById("adminStorageInfo");if(st)st.textContent=`Browser localStorage: ${Object.keys(localStorage).length} keys • approx. ${storageBytes.toLocaleString()} characters used.`;
+  if(typeof window.renderAdminGamepassRequests==='function') window.renderAdminGamepassRequests();
+}
+document.getElementById("adminUnlock")?.addEventListener("click",async()=>{
+  const input=document.getElementById("adminCode"), code=input?.value||"";
+  if(!code){setAdminMessage("Enter the admin code.",true);return;}
+  const hash=await sha256(code);
+  if(hash===ADMIN_CODE_HASH){adminUnlocked=true;input.value="";setAdminMessage("");refreshAdminDashboard();toast("Admin dashboard unlocked.");}
+  else{setAdminMessage("Incorrect admin code.",true);input.value="";}
+});
+document.getElementById("adminCode")?.addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("adminUnlock")?.click()});
+document.getElementById("adminLockBtn")?.addEventListener("click",()=>{adminUnlocked=false;refreshAdminDashboard();toast("Admin dashboard locked.");});
+document.getElementById("adminRefresh")?.addEventListener("click",()=>{refreshAdminDashboard();toast("Admin dashboard refreshed.");});
+document.getElementById("adminClearLocal")?.addEventListener("click",()=>{
+  if(confirm("Clear the current browser's ChemLab player data? This affects this device only.")){localStorage.removeItem("chemlabUsername");localStorage.removeItem("labName");refreshAdminDashboard();toast("Local player label cleared.");}
+});
+
+
+/* =========================================================
+   PROFILE / ACCOUNT / SKILL TREE / SPEEDRUN / THEMES
+   Offline prototype. Public deployment should use a server.
+   ========================================================= */
+const ACCOUNT_KEY="chemlabAccountsV1";
+const SESSION_KEY="chemlabSessionV1";
+const EXTRA_KEY="chemlabExtraV1";
+const extraDefault={skillPoints:0,skills:[],theme:"basic",speedBest:0,speedRuns:0,speedCorrect:0,speedAnswered:0,scientists:[],about:"Chemistry explorer"};
+let extraState=Object.assign({},extraDefault,JSON.parse(localStorage.getItem(EXTRA_KEY)||"{}"));
+function saveExtra(){localStorage.setItem(EXTRA_KEY,JSON.stringify(extraState));}
+function getAccounts(){try{return JSON.parse(localStorage.getItem(ACCOUNT_KEY)||"[]")}catch(e){return[]}}
+function saveAccounts(a){localStorage.setItem(ACCOUNT_KEY,JSON.stringify(a))}
+function getSession(){return localStorage.getItem(SESSION_KEY)||""}
+function currentAccount(){return getAccounts().find(a=>a.username===getSession())||null}
+function rankForLevel(l){
+ if(l>=50)return "🏆 ChemLab Legend";
+ if(l>=40)return "🌎 Applied Chemist";
+ if(l>=30)return "👨‍🔬 Research Scientist";
+ if(l>=20)return "🧬 Molecular Master";
+ if(l>=15)return "🧠 Chemistry Analyst";
+ if(l>=10)return "⚗️ Compound Crafter";
+ if(l>=5)return "🔬 Element Explorer";
+ return "🧪 Lab Rookie";
+}
+async function hashLocalPassword(pw){return await sha256(String(pw));}
+function accountMessage(msg,bad=false){const e=document.getElementById("accountMessage");if(e){e.textContent=msg;e.style.color=bad?"#ff8c9a":"#8be8ff";}}
+function syncProfileToAccount(){
+ const a=currentAccount(); if(!a)return;
+ a.level=currentLevel();a.xp=clState.xp;a.discoveries=Object.keys(discoveries).length;
+ a.quiz=clState.quizBest||0;a.mysteries=clState.mysterySolved||0;a.achievements=CL_ACHIEVEMENTS.filter(x=>x[3]()).length;
+ a.elements=Number(localStorage.getItem("clElementCount")||0);a.theme=extraState.theme;a.scientists=extraState.scientists.length;a.rank=rankForLevel(a.level);
+ saveAccounts(getAccounts().map(x=>x.username===a.username?a:x));
+}
+function ensureLocalAccount(){
+ if(!getSession())return;
+ syncProfileToAccount();
+}
+function renderAccount(){
+ const a=currentAccount(),out=document.getElementById("accountLoggedOut"),inn=document.getElementById("accountLoggedIn");
+ if(!out||!inn)return;
+ out.style.display=a?"none":"block";inn.style.display=a?"block":"none";
+ if(a){
+  document.getElementById("accountCurrentUser").textContent=a.username;
+ }
+}
+function seedAccountProgress(){
+  // With account-scoped localStorage installed above, the current in-memory
+  // progress becomes that account's progress after sign-in.
+  clSaveSilent();
+  saveExtra();
+}
+document.getElementById("createAccountBtn")?.addEventListener("click",async()=>{
+  const u=document.getElementById("accountCreateUsername").value.trim();
+  const p=document.getElementById("accountCreatePassword").value;
+  if(!/^[A-Za-z0-9_]{3,20}$/.test(u)){accountMessage("Username must be 3–20 letters, numbers or underscores.",true);return}
+  if(p.length<6){accountMessage("Use a password of at least 6 characters.",true);return}
+  let accounts=getAccounts();
+  if(accounts.some(a=>a.username.toLowerCase()===u.toLowerCase())){accountMessage("That username is already taken.",true);return}
+  const ph=await hashLocalPassword(p);
+  const a={username:u,passwordHash:ph,level:currentLevel(),xp:clState.xp,discoveries:Object.keys(discoveries).length,quiz:clState.quizBest||0,mysteries:clState.mysterySolved||0,achievements:0,elements:Number(localStorage.getItem("clElementCount")||0),theme:extraState.theme,scientists:extraState.scientists.length,rank:rankForLevel(currentLevel()),createdAt:new Date().toISOString()};
+  accounts.push(a);saveAccounts(accounts);
+  localStorage.setItem(SESSION_KEY,u);
+  // Keep the progress that was on this device as the initial account profile.
+  clSaveSilent(); saveExtra();
+  accountMessage("Account created. You are signed in.");
+  renderAccount();renderProfile();renderPlayerDirectory();renderSkillTree();renderThemes();updateDashboard();renderLab();
+  toast("Welcome to ChemLab, "+u+"!");
+});
+document.getElementById("loginAccountBtn")?.addEventListener("click",async()=>{
+  const u=document.getElementById("accountLoginUsername").value.trim(),p=document.getElementById("accountLoginPassword").value;
+  const a=getAccounts().find(x=>x.username.toLowerCase()===u.toLowerCase());
+  if(!a){accountMessage("Account not found.",true);return}
+  if(await hashLocalPassword(p)!==a.passwordHash){accountMessage("Incorrect password.",true);return}
+  localStorage.setItem(SESSION_KEY,a.username);
+  // Reload so every progress module reads this account's scoped save data.
+  location.reload();
+});
+document.getElementById("logoutAccountBtn")?.addEventListener("click",()=>{
+  // Save while the account session is still active, then clear the guest copy.
+  try{clSaveSilent();saveExtra();}catch(e){}
+  localStorage.removeItem(SESSION_KEY);
+  ["chemlabCompleteSaveV1","chemlabdisc","chemlabExtraV1","clElementCount","clElementVisited","clVisitedElements","clAppsVisited","clScientistsVisited","clPlayersVisited","labName","clExported"].forEach(k=>localStorage.removeItem(k));
+  location.reload();
+});
+
+function renderProfile(){
+ const a=currentAccount(), username=a?a.username:(localStorage.getItem("chemlabUsername")||"Guest Scientist");
+ const lvl=currentLevel(), xp=clState.xp||0, pct=xp%100;
+ const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+ set("profileUsername",username);set("profileLevel",lvl);set("profileXP",xp);set("profileRank",rankForLevel(lvl));
+ set("profileElements",(Number(localStorage.getItem("clElementCount")||0))+"/118");
+ set("profileCompounds",Object.keys(discoveries).length);set("profileQuiz",(clState.quizBest||0)+"%");
+ set("profileMystery",clState.mysterySolved||0);set("profileAchievements",CL_ACHIEVEMENTS.filter(x=>x[3]()).length);
+ set("profileScientists",extraState.scientists.length+"/"+scientists.length);
+ set("profileLabTheme",themes.find(t=>t[0]===extraState.theme)?.[1]||"Basic Laboratory");
+ set("profileAbout","Chemistry explorer");
+ set("profileJoin",a?"ChemLab account • Joined "+new Date(a.createdAt).toLocaleDateString():"Offline guest profile");
+ set("profileProgressText",`${xp%100}/100 XP toward the next level • ${rankForLevel(lvl)}`);
+ const f=document.getElementById("profileLevelFill");if(f)f.style.width=pct+"%";
+ const av=document.getElementById("profileAvatar");if(av)av.textContent=a?((a.username[0]||"🧪").toUpperCase()):"🧪";
+ syncProfileToAccount();
+}
+
+function renderPlayerDirectory(q=""){
+ const box=document.getElementById("playerDirectory");if(!box)return;
+ const query=(q||document.getElementById("playerSearch")?.value||"").toLowerCase().trim();
+ const accounts=getAccounts().filter(a=>!query||a.username.toLowerCase().includes(query));
+ document.getElementById("playerCount").textContent=accounts.length+" player"+(accounts.length===1?"":"s");
+ box.innerHTML=accounts.length?accounts.map(a=>`<div class="featureCard playerCard" data-player="${esc(a.username)}"><div class="playerMini"><div class="miniAvatar">${esc((a.username[0]||"🧪").toUpperCase())}</div><div><h3>${esc(a.username)}</h3><div class="small">${esc(a.rank||rankForLevel(a.level||1))}</div></div></div><p>${a.xp||0} XP • ${a.discoveries||0} discoveries • ${a.achievements||0} achievements</p></div>`).join(""):'<div class="empty">No player profiles found. Create an account first.</div>';
+ box.querySelectorAll("[data-player]").forEach(c=>c.onclick=()=>showPublicProfile(c.dataset.player));
+}
+function showPublicProfile(username){
+ const a=getAccounts().find(x=>x.username===username),box=document.getElementById("publicProfile");if(!a||!box)return;
+ box.style.display="block";
+ box.innerHTML=`<div class="top"><div><h2>👤 ${esc(a.username)}</h2><span class="rankBadge">${esc(a.rank||rankForLevel(a.level||1))}</span></div><button class="action secondary" id="closePublicProfile">Close</button></div>
+ <p class="small">Chemistry explorer</p>
+ <div class="statGrid">
+ <div class="statBox"><div class="big">${a.level||1}</div>Level</div><div class="statBox"><div class="big">${a.xp||0}</div>XP</div>
+ <div class="statBox"><div class="big">${a.discoveries||0}</div>Discoveries</div><div class="statBox"><div class="big">${a.elements||0}/118</div>Elements</div>
+ <div class="statBox"><div class="big">${a.quiz||0}%</div>Quiz</div><div class="statBox"><div class="big">${a.achievements||0}</div>Achievements</div>
+ </div><p class="privateBadge" style="margin-top:14px">🔒 Private account data is hidden.</p>`;
+ document.getElementById("closePublicProfile").onclick=()=>box.style.display="none";
+}
+document.getElementById("playerSearch")?.addEventListener("input",e=>renderPlayerDirectory(e.target.value));
+
+const skillNodes=[
+ ["elements","🔬 Element Scout","Explore 10 elements.",1,()=>Number(localStorage.getItem("clElementCount")||0)>=10],
+ ["elements2","🧪 Periodic Pathfinder","Explore 50 elements.",2,()=>Number(localStorage.getItem("clElementCount")||0)>=50],
+ ["compounds","⚗️ Formula Apprentice","Discover 5 compounds.",1,()=>Object.keys(discoveries).length>=5],
+ ["compounds2","🧬 Molecular Analyst","Discover 20 compounds.",2,()=>Object.keys(discoveries).length>=20],
+ ["knowledge","🧠 Quiz Scholar","Score 80%+ on a quiz.",1,()=>clState.quizBest>=80],
+ ["mystery","🔍 Mystery Analyst","Solve 5 mysteries.",2,()=>clState.mysterySolved>=5],
+ ["speed","⚡ Speed Specialist","Score 500 points in a speedrun.",2,()=>extraState.speedBest>=500]
+];
+function skillUnlocked(id){return extraState.skills.includes(id)}
+function renderSkillTree(){
+ const box=document.getElementById("skillTree");if(!box)return;
+ document.getElementById("skillPoints").textContent=extraState.skillPoints||0;
+ box.innerHTML=`<div class="treeRow"><div class="skillNode unlocked"><h3>🧪 START</h3><p class="small">Begin your ChemLab journey.</p></div></div><div class="treeRow">`+
+ skillNodes.map(n=>{const unlocked=skillUnlocked(n[0]),available=n[4](),cost=n[3];return `<div class="skillNode ${unlocked?"unlocked":""}"><h3>${n[1]}</h3><p class="small">${n[2]}</p><b>${unlocked?"✓ UNLOCKED":available?"Available":"🔒 Locked"}</b>${!unlocked&&available?`<br><button class="action" data-skill="${n[0]}" data-cost="${cost}">Unlock • ${cost} SP</button>`:""}</div>`}).join("")+
+ `</div>`;
+ box.querySelectorAll("[data-skill]").forEach(b=>b.onclick=()=>{const cost=Number(b.dataset.cost),id=b.dataset.skill;if(extraState.skillPoints<cost){toast("Not enough Skill Points.");return}extraState.skillPoints-=cost;extraState.skills.push(id);saveExtra();clSaveSilent();renderSkillTree();toast("Skill unlocked!");});
+}
+function awardSkillPoints(){
+ const target=Math.max(0,currentLevel()-1);
+ const spent=extraState.skills.reduce((n,id)=>{const x=skillNodes.find(s=>s[0]===id);return n+(x?x[3]:0)},0);
+ const earned=Math.max(0,target-spent-extraState.skillPoints)+extraState.skillPoints;
+ if(target>spent+extraState.skillPoints)extraState.skillPoints=target-spent;
+ saveExtra();
+}
+
+const themes=[
+ ["basic","🧪 Basic Laboratory",0,"#071321"],
+ ["neon","🌌 Neon Laboratory",5,"#10143b"],
+ ["arctic","❄️ Arctic Laboratory",10,"#102d3b"],
+ ["volcano","🌋 Volcanic Laboratory",15,"#321b13"],
+ ["future","🤖 Future Laboratory",20,"#1b1438"],
+ ["space","🛰️ Space Laboratory",25,"#090d2b"],
+ ["classic","🏛️ Classic Laboratory",30,"#2a2115"]
+];
+function renderThemes(){
+ const box=document.getElementById("themeGrid");if(!box)return;
+ box.innerHTML=themes.map(t=>{const unlocked=currentLevel()>=t[2],selected=extraState.theme===t[0];return `<div class="featureCard themeCard ${selected?"selected":""}"><div><div class="themePreview" style="background:linear-gradient(135deg,${t[3]},#081827)"></div><h3>${t[1]}</h3><p class="small">${t[2]===0?"Starting theme":"Unlock at Level "+t[2]}</p></div>${selected?'<b>✓ ACTIVE</b>':unlocked?`<button class="action" data-theme="${t[0]}">Use Theme</button>`:'<span class="small">🔒 Locked</span>'}</div>`}).join("");
+ box.querySelectorAll("[data-theme]").forEach(b=>b.onclick=()=>{extraState.theme=b.dataset.theme;saveExtra();applyTheme();renderThemes();renderProfile();toast("Laboratory theme changed.");});
+}
+function applyTheme(){
+ const t=themes.find(x=>x[0]===extraState.theme)||themes[0];
+ document.body.dataset.labtheme=t[0];
+}
+const styleTheme=document.createElement("style");styleTheme.textContent=`
+body[data-labtheme="neon"]{background:radial-gradient(circle at 20% 10%,#1b1450 0,#06101b 45%,#030812 100%)}
+body[data-labtheme="arctic"]{background:radial-gradient(circle at 20% 10%,#0b3c52 0,#06101b 50%,#02080d 100%)}
+body[data-labtheme="volcano"]{background:radial-gradient(circle at 20% 10%,#522013 0,#140b08 45%,#030608 100%)}
+body[data-labtheme="future"]{background:radial-gradient(circle at 20% 10%,#29145a 0,#080b20 50%,#02040b 100%)}
+body[data-labtheme="space"]{background:radial-gradient(circle at 70% 0,#17134f 0,#050718 48%,#01030a 100%)}
+body[data-labtheme="classic"]{background:radial-gradient(circle at 20% 10%,#4a3519 0,#1c160c 45%,#050706 100%)}`;document.head.appendChild(styleTheme);
+
+const speedQuestions=[
+ ["What is the chemical symbol for oxygen?",["O","Ox","Og","On"],0],
+ ["What is the atomic number of carbon?",["4","6","8","12"],1],
+ ["Which element has symbol Na?",["Nitrogen","Sodium","Neon","Nickel"],1],
+ ["Which is a noble gas?",["Oxygen","Chlorine","Neon","Sodium"],2],
+ ["What is the formula for water?",["CO₂","H₂O","O₂","NaCl"],1],
+ ["Which element has atomic number 1?",["Helium","Hydrogen","Lithium","Carbon"],1],
+ ["Which element has symbol Fe?",["Fluorine","Iron","Francium","Fermium"],1],
+ ["Which is a halogen?",["Argon","Chlorine","Calcium","Carbon"],1],
+ ["What is the formula for carbon dioxide?",["CO","CO₂","C₂O","C₂O₂"],1],
+ ["Which element is a liquid metal at room temperature?",["Mercury","Iron","Copper","Aluminium"],0],
+ ["What is the symbol for potassium?",["P","K","Pt","Po"],1],
+ ["Which element has atomic number 8?",["Nitrogen","Oxygen","Fluorine","Carbon"],1]
+];
+let speedTimer=null,speedState={running:false,index:0,score:0,answered:0,correct:0};
+function renderSpeedrunHome(){document.getElementById("speedBest").textContent=extraState.speedBest||0;document.getElementById("speedStart").style.display=speedState.running?"none":"block";document.getElementById("speedGame").style.display=speedState.running?"block":"none";applyTheme();}
+function speedNext(){
+ const q=speedQuestions[Math.floor(Math.random()*speedQuestions.length)];
+ document.getElementById("speedQuestion").textContent=q[0];
+ const box=document.getElementById("speedOptions");box.innerHTML=q[1].map((o,i)=>`<button class="quizOption" data-i="${i}">${o}</button>`).join("");
+ box.querySelectorAll("button").forEach(b=>b.onclick=()=>speedAnswer(Number(b.dataset.i),q[2]));
+}
+function speedAnswer(i,correct){
+ if(!speedState.running)return;
+ speedState.answered++;
+ if(i===correct){speedState.correct++;speedState.score+=100;toast("+100");}
+ else speedState.score=Math.max(0,speedState.score-25);
+ document.getElementById("speedScore").textContent=speedState.score;
+ document.getElementById("speedAnswered").textContent=speedState.answered;
+ document.getElementById("speedAccuracy").textContent=Math.round(speedState.correct/speedState.answered*100)+"%";
+ speedNext();
+}
+function endSpeedrun(){
+ clearInterval(speedTimer);speedState.running=false;
+ extraState.speedRuns++;extraState.speedCorrect+=speedState.correct;extraState.speedAnswered+=speedState.answered;
+ extraState.speedBest=Math.max(extraState.speedBest,speedState.score);saveExtra();
+ clState.xp+=Math.floor(speedState.score/10);clSave();
+ document.getElementById("speedGame").style.display="none";document.getElementById("speedStart").style.display="none";
+ const r=document.getElementById("speedResult");r.style.display="block";r.innerHTML=`<h2>⚡ Run Complete!</h2><div class="kpi">${speedState.score}</div><p>${speedState.correct}/${speedState.answered} correct • ${speedState.answered?Math.round(speedState.correct/speedState.answered*100):0}% accuracy</p><button class="action" id="speedAgain">Run Again</button>`;document.getElementById("speedAgain").onclick=()=>startSpeedrun();
+ renderProfile();renderThemes();renderSkillTree();
+}
+function startSpeedrun(){
+ speedState={running:true,index:0,score:0,answered:0,correct:0};document.getElementById("speedResult").style.display="none";document.getElementById("speedStart").style.display="none";document.getElementById("speedGame").style.display="block";
+ let remaining=60;document.getElementById("speedTimer").textContent=remaining;speedNext();
+ clearInterval(speedTimer);speedTimer=setInterval(()=>{remaining--;document.getElementById("speedTimer").textContent=remaining;if(remaining<=0)endSpeedrun()},1000);
+}
+document.getElementById("speedStartBtn")?.addEventListener("click",startSpeedrun);
+
+document.getElementById("saveLabName")?.addEventListener("click",()=>{syncProfileToAccount();renderProfile()});
+
+/* Count explored elements and grant progression. */
+const oldShowElementForCount=showElement;
+showElement=function(sym){
+ oldShowElementForCount(sym);
+ let visited=JSON.parse(localStorage.getItem("clVisitedElements")||"[]");
+ if(!visited.includes(sym)){visited.push(sym);localStorage.setItem("clVisitedElements",JSON.stringify(visited));localStorage.setItem("clElementCount",String(visited.length));awardSkillPoints();clSaveSilent();renderProfile();}
+};
+
+/* Scientist collection: gallery visits become collectibles; unlocks are progression-based. */
+function syncScientistCollection(){
+ const unlocked=Math.min(scientists.length,Math.floor(currentLevel()/3)+Math.min(3,clState.challengeDone.length));
+ extraState.scientists=scientists.slice(0,unlocked).map(x=>x[1]);saveExtra();
+}
+const oldRenderScientists=renderScientists;
+renderScientists=function(){syncScientistCollection();oldRenderScientists();};
+
+/* Extend achievements with the new systems. */
+CL_ACHIEVEMENTS.push(
+ ["🧠","Skill Architect","Unlock your first skill.",()=>extraState.skills.length>=1],
+ ["⚡","Speed Sprinter","Complete your first speedrun.",()=>extraState.speedRuns>=1],
+ ["🎨","Lab Designer","Unlock a laboratory theme.",()=>themes.filter(t=>currentLevel()>=t[2]).length>=2],
+ ["👤","Profile Pioneer","Create a ChemLab account.",()=>!!currentAccount()],
+ ["👥","Community Scientist","View the player directory.",()=>localStorage.getItem("clPlayersVisited")==="1"],
+ ["🏅","Speed Champion","Score 500 points in a speedrun.",()=>extraState.speedBest>=500]
+);
+
+/* Account/profile directory visits */
+const oldRenderPlayerDirectory=renderPlayerDirectory;
+renderPlayerDirectory=function(q=""){localStorage.setItem("clPlayersVisited","1");oldRenderPlayerDirectory(q);};
+
+/* Keep all new progress synchronized. */
+const oldClSave=clSave;
+clSave=function(){
+ awardSkillPoints();syncScientistCollection();syncProfileToAccount();oldClSave();
+};
+
+/* Dashboard */
+function updateDashboard(){
+ const xp=clState.xp, level=currentLevel(), within=xp%100;
+ const ids={
+  levelNumber:level,xpNumber:xp,
+  homeDiscoveries:Object.keys(discoveries).length,
+  homeChallenges:clState.challengeDone.length,
+  homeQuizScore:clState.quizBest+"%",
+  homeMystery:clState.mysterySolved,
+  levelTitle:currentLevelName(),xpInLevel:within
+ };
+ Object.entries(ids).forEach(([id,v])=>{const e=document.getElementById(id);if(e)e.textContent=v});
+ const fill=document.getElementById("levelFill");if(fill)fill.style.width=within+"%";
+}
+applyTheme(); syncScientistCollection(); awardSkillPoints(); renderAccount(); renderProfile(); renderPlayerDirectory(); renderSkillTree(); renderThemes(); clSaveSilent();
+renderAchievements();
+updateDashboard();
+renderChallengeBoard();
+renderLab();
+clShow("home");
+</script>
+<style>
+#commerceView{display:none}.commerceGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.commerceCard{background:rgba(12,27,45,.92);border:1px solid #31506d;border-radius:16px;padding:18px}.commerceCard h3{margin:8px 0}.coin{font-weight:950;color:#ffd166}.requestPending{color:#ffd166}.requestAccepted{color:#67f3a5}.requestDeclined{color:#ff8796}.commerceTabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}.commerceTabs button{padding:10px 13px;border-radius:10px;border:1px solid #31506d;background:#0d2034;color:#eaf6ff;font-weight:800}.commerceTabs button.active{border-color:#67e8ff;box-shadow:0 0 0 2px #67e8ff33}.commerceNotice{padding:12px;border-radius:12px;background:#121d12;border:1px solid #4c754c;color:#bde9bd;margin:12px 0}.adminReq{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px;border:1px solid #29445e;background:#09192a;border-radius:12px;margin:8px 0}.adminReqBtns{display:flex;gap:7px;flex-wrap:wrap}@media(max-width:900px){.commerceGrid{grid-template-columns:1fr 1fr}}@media(max-width:600px){.commerceGrid{grid-template-columns:1fr}.adminReq{flex-direction:column;align-items:flex-start}}
+</style>
+<section class="fullview" id="commerceView">
+  <div class="panel">
+    <div class="top"><div><h2 style="margin:0">🛒 ChemLab Shop & Gamepasses</h2><div class="small">Spend Lab Credits on virtual equipment, themes and upgrades. Request gamepasses for admin review.</div></div><div class="stats" id="commerceCredits">🪙 0</div></div>
+    <div class="commerceTabs"><button id="shopTab" class="active" onclick="commerceTab('shop')">🛒 Shop</button><button id="passTab" onclick="commerceTab('passes')">🎟️ Gamepasses</button></div>
+    <div id="commerceBody"></div>
+  </div>
+</section>
+<script>
+(function(){
+  const COM_KEY='chemlabCommerceV1';
+  const PRODUCTS=[
+    ['Safety Goggles','🥽',50,'Safety equipment decoration for your lab.'],
+    ['Digital Balance','⚖️',100,'Unlock a precision-balance item for your virtual lab.'],
+    ['Molecule Viewer','🔮',150,'Adds a molecule-viewer upgrade to your inventory.'],
+    ['Advanced Flask','⚗️',200,'Adds an advanced flask to your equipment collection.'],
+    ['Reaction FX Pack','✨',250,'Unlocks extra visual reaction effects.'],
+    ['Neon Lab Theme','🌌',300,'Unlocks the Neon Lab visual theme.'],
+    ['Space Lab Theme','🚀',400,'Unlocks a space-inspired laboratory theme.'],
+    ['Master Equipment Pack','🧰',600,'Adds a complete virtual equipment pack.']
+  ];
+  const PASSES=[
+    ['Premium Lab','Unlock premium-looking lab upgrades and special cosmetics.',150],
+    ['Researcher Pass','Adds a researcher profile badge and bonus challenge cosmetics.',250],
+    ['Master Chemist Pass','A prestige cosmetic bundle for advanced players.',500]
+  ];
+  function username(){return (typeof getSession==='function'&&getSession()) || (typeof currentAccount==='function'&&currentAccount()?.username) || 'local-player'}
+  function all(){try{return JSON.parse(localStorage.getItem(COM_KEY)||'{}')}catch(e){return{}}}
+  function saveAll(x){localStorage.setItem(COM_KEY,JSON.stringify(x))}
+  function state(){let a=all(),u=username();if(!a[u])a[u]={credits:250,inventory:['Basic Flask'],themes:['Basic'],passes:[],requests:[],history:[]};saveAll(a);return a[u]}
+  function mutate(fn){let a=all(),u=username();if(!a[u])a[u]={credits:250,inventory:['Basic Flask'],themes:['Basic'],passes:[],requests:[],history:[]};fn(a[u]);saveAll(a);return a[u]}
+  window.commerceTab=function(tab){
+    document.querySelectorAll('#commerceView .commerceTabs button').forEach(b=>b.classList.remove('active'));
+    const id=tab==='passes'?'passTab':'shopTab';
+    document.getElementById(id).classList.add('active');
+    if(tab==='passes')renderPasses(); else renderShop();
+  };
+  function updateCredits(){let e=document.getElementById('commerceCredits');if(e)e.textContent='🪙 '+state().credits}
+  function renderShop(){let s=state();updateCredits();document.getElementById('commerceBody').innerHTML=`<div class="commerceNotice">Your Lab Credits are saved separately for <b>${escapeHtml(username())}</b>. Purchases are local prototype data.</div><div class="commerceGrid">${PRODUCTS.map((x,i)=>{let owned=s.inventory.includes(x[0])||s.themes.includes(x[0]);return `<div class="commerceCard"><div style="font-size:42px">${x[1]}</div><h3>${x[0]}</h3><div class="small">${x[3]}</div><p class="coin">🪙 ${x[2]}</p><button class="primary" ${owned?'disabled':''} onclick="buyChemProduct(${i})">${owned?'✓ Owned':'Buy'}</button></div>`}).join('')}</div>`}
+  window.buyChemProduct=function(i){let x=PRODUCTS[i],s=state();if(s.inventory.includes(x[0])||s.themes.includes(x[0]))return toast('Already owned.');if(s.credits<x[2])return toast('Not enough Lab Credits.');s=mutate(s=>{s.credits-=x[2];s.history.push({type:'purchase',item:x[0],time:new Date().toISOString()});if(x[0].includes('Theme'))s.themes.push(x[0]);else s.inventory.push(x[0]);});toast('Purchased '+x[0]+'!');renderShop()}
+  function renderPasses(){let s=state();updateCredits();document.getElementById('commerceBody').innerHTML=`<div class="commerceNotice">Gamepass purchases are simulated. In this local prototype, players submit requests and the Admin panel accepts or declines them.</div><div class="commerceGrid">${PASSES.map((x,i)=>{let owned=s.passes.includes(x[0]),req=s.requests.find(r=>r.pass===x[0]&&r.status==='Pending');return `<div class="commerceCard"><div style="font-size:42px">🎟️</div><h3>${x[0]}</h3><div class="small">${x[1]}</div><p class="coin">🪙 ${x[2]}</p><button class="primary" onclick="requestChemPass(${i})" ${owned||req?'disabled':''}>${owned?'✓ Owned':req?'⏳ Pending':'Request Gamepass'}</button></div>`}).join('')}</div>`}
+  window.requestChemPass=function(i){let x=PASSES[i],s=state();if(s.passes.includes(x[0]))return toast('You already own this pass.');if(s.requests.some(r=>r.pass===x[0]&&r.status==='Pending'))return toast('Request already pending.');mutate(s=>s.requests.push({pass:x[0],price:x[2],status:'Pending',time:new Date().toISOString(),user:username()}));toast('🎟️ Request sent to Admin.');renderPasses()}
+  window.renderAdminGamepassRequests=function(){
+    const host=document.getElementById('adminGamepassRequests');
+    if(!host)return;
+    let accounts=all(),rows=[];
+    Object.entries(accounts).forEach(([u,s])=>(s.requests||[]).forEach((r,i)=>rows.push({u,s,r,i})));
+    host.innerHTML=`<div class="top" style="margin-bottom:12px"><div><h3 style="margin:0">🎟️ Gamepass Requests</h3><div class="small">Only available inside the unlocked Admin Dashboard. Review player requests here.</div></div><div class="stats">${rows.filter(x=>x.r.status==='Pending').length} pending</div></div>
+      <div class="commerceNotice">🛡️ Admin controls are part of this offline prototype. Accepting a request grants the pass in that player's local commerce data; declining leaves it ungranted.</div>
+      ${rows.length?rows.map(x=>`<div class="adminReq"><div><b>${escapeHtml(x.u)} — ${escapeHtml(x.r.pass)}</b><div class="small">🪙 ${x.r.price} • ${new Date(x.r.time).toLocaleString()} • <span class="request${x.r.status}">${x.r.status}</span></div></div><div class="adminReqBtns">${x.r.status==='Pending'?`<button class="primary" onclick="resolveChemPass('${encodeURIComponent(x.u)}',${x.i},'Accepted')">Accept</button><button class="danger" onclick="resolveChemPass('${encodeURIComponent(x.u)}',${x.i},'Declined')">Decline</button>`:`<span class="tag">${x.r.status}</span>`}</div></div>`).join(''):'<div class="commerceCard"><h3>No gamepass requests</h3><div class="small">New player requests will appear here.</div></div>'}`;
+  };
+  window.resolveChemPass=function(enc,i,status){let a=all(),u=decodeURIComponent(enc),s=a[u];if(!s||!s.requests[i])return;if(s.requests[i].status!=='Pending')return toast('Request already resolved.');s.requests[i].status=status;if(status==='Accepted'){if(!s.passes.includes(s.requests[i].pass))s.passes.push(s.requests[i].pass);if(s.credits>=s.requests[i].price)s.credits-=s.requests[i].price;}saveAll(a);toast('Request '+status.toLowerCase()+'.');if(typeof window.renderAdminGamepassRequests==='function')window.renderAdminGamepassRequests();if(typeof refreshAdminDashboard==='function')refreshAdminDashboard()}
+  function escapeHtml(v){return String(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+  window.renderCommerce=function(){
+    document.querySelectorAll('.fullview').forEach(e=>e.style.display='none');let forge=document.querySelector('main.wrap');if(forge)forge.style.display='none';document.getElementById('commerceView').style.display='block';commerceTab('shop');window.scrollTo({top:0,behavior:'smooth'});
+  };
+  const old=window.clShow;
+  window.clShow=function(view){if(view==='commerce'){renderCommerce();return}if(document.getElementById('commerceView'))document.getElementById('commerceView').style.display='none';return old(view)};
+  const bar=document.getElementById('featurebar');if(bar&&!document.getElementById('commerceNav')){let b=document.createElement('button');b.className='feature';b.id='commerceNav';b.textContent='🛒 Shop & Passes';b.onclick=()=>window.clShow('commerce');bar.appendChild(b)}
+  // Keep commerce state isolated by username and provide an initial 250-credit balance.
+  state();
+})();
+</script>
+
+<script id="chemlab-account-first-fix">
+(function(){
+  // ChemLab always starts at the Account page.
+  // Existing saved accounts/progress are NOT deleted.
+  function openAccountFirst(){
+    try{
+      if(typeof clShow === 'function'){
+        clShow('account');
+      } else {
+        document.querySelectorAll('.featureview,.fullview,main.wrap').forEach(function(el){
+          if(el.id === 'accountView') el.style.display = 'block';
+          else if(el.id) el.style.display = 'none';
+        });
+      }
+    }catch(e){}
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', openAccountFirst);
+  }else{
+    openAccountFirst();
+  }
+})();
+</script>
+
+
+<div id="profileLogoutBlock" class="featureCard" style="margin-top:12px">
+  <h3>🚪 Log out</h3>
+  <p class="small">Return to the ChemLab Account page. Your local progress remains saved.</p>
+  <button class="action secondary" id="profileLogoutBtn" type="button">Log Out</button>
+</div>
+<script id="chemlab-profile-logout-fix">
+(function(){
+  function wireProfileLogout(){
+    var profile = document.getElementById('profileView');
+    if(!profile || document.getElementById('profileLogoutBlock')) return;
+
+    profile.insertAdjacentHTML('beforeend', `
+<div id="profileLogoutBlock" class="featureCard" style="margin-top:12px">
+  <h3>🚪 Log out</h3>
+  <p class="small">Return to the ChemLab Account page. Your local progress remains saved.</p>
+  <button class="action secondary" id="profileLogoutBtn" type="button">Log Out</button>
+</div>
+`);
+    var btn = document.getElementById('profileLogoutBtn');
+    if(btn) btn.addEventListener('click', function(){
+      try{
+        if(typeof logoutAccount === 'function') logoutAccount();
+        else if(typeof signOutAccount === 'function') signOutAccount();
+        else if(typeof logout === 'function') logout();
+        else {
+          localStorage.removeItem('chemlabSessionV1');
+          localStorage.removeItem('chemlab_current');
+          if(typeof clShow === 'function') clShow('account');
+          else location.reload();
+        }
+      }catch(e){
+        localStorage.removeItem('chemlabSessionV1');
+        localStorage.removeItem('chemlab_current');
+        location.reload();
+      }
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', wireProfileLogout);
+  else wireProfileLogout();
+})();
+</script>
+
+
+<style id="chemlab-account-nav-fix">
+/* Account remains the first/auth screen; Profile owns logout. */
+</style>
+<script id="chemlab-account-nav-fix-script">
+(function(){
+  function adjust(){
+    var btns = document.querySelectorAll('button,.feature');
+    btns.forEach(function(b){
+      var text=(b.textContent||'').trim();
+      if(/^🔐?\s*Account$/i.test(text) || /^Account$/i.test(text)){
+        b.dataset.accountNav='true';
+      }
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',adjust);
+  else adjust();
+})();
+</script>
+
+</body></html>
